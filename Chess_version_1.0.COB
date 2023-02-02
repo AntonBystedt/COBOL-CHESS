@@ -1,0 +1,2270 @@
+      ******************************************************************
+      * Author:
+      * Date:
+      * Purpose:
+      * Tectonics: cobc
+      ******************************************************************
+       IDENTIFICATION DIVISION.
+      *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+       PROGRAM-ID. CHESS-V1.
+
+       ENVIRONMENT DIVISION.
+      *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+       CONFIGURATION SECTION.
+      *-----------------------
+       INPUT-OUTPUT SECTION.
+      *-----------------------
+       DATA DIVISION.
+      *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+       FILE SECTION.
+      *-----------------------
+       WORKING-STORAGE SECTION.
+
+           01 BRD-WIDTH    PIC X(27)
+           VALUE '  A  B  C  D  E  F  G  H  '.
+
+           01 BRD-ICON.
+               05 BRD-ROWS PIC X(27) OCCURS 8 TIMES.
+
+           01 WS-COUNTERS.
+               05 WS-COUNTER   PIC 9.
+               05 WS-COUNTER2  PIC 9.
+               05 T-COUNTER    PIC 99.
+               05 U-COUNTER    PIC 99.
+               05 V-COUNTER    PIC 99.
+               05 W-COUNTER    PIC 99.
+               05 X-COUNTER    PIC 99.
+               05 Y-COUNTER    PIC 99.
+               05 Z-COUNTER    PIC 99.
+
+           01 INPUT-VARIABLES.
+               05 INPUT-VARIABLE       PIC X(2).
+               05 INPUT-X-VARIABLE     PIC X(1).
+               05 INPUT-X-VARIABLE-N   PIC S9(1).
+               05 INPUT-Y-VARIABLE     PIC S9(1).
+
+           01 WINNER-SWITCH        PIC X(1).
+               88 W-WINNER     VALUE IS 'W'.
+               88 B-WINNER     VALUE IS 'B'.
+               88 NO-WINNER    VALUE IS 'N'.
+
+           01 VALID-MOVE           PIC X(1).
+               88 IS-VALID     VALUE 'Y'.
+               88 NOT-VALID    VALUE 'N'.
+
+           01 PLAYER-TURN          PIC X(1).
+               88 W-TURN       VALUE 'W'.
+               88 B-TURN       VALUE 'B'.
+
+           01 TYPE-MOVE            PIC X(3).
+               88 N-MO         VALUE 'NMO'.
+               88 D-L-U        VALUE 'DLU'.
+               88 D-R-U        VALUE 'DRU'.
+               88 D-L-D        VALUE 'DLD'.
+               88 D-R-D        VALUE 'DRD'.
+               88 S-UP         VALUE 'SUP'.
+               88 S-DN         VALUE 'SDN'.
+               88 S-RI         VALUE 'SRI'.
+               88 S-LE         VALUE 'SLE'.
+               88 H-U-R        VALUE 'HUR'.
+               88 H-U-L        VALUE 'HUL'.
+               88 H-R-U        VALUE 'HRU'.
+               88 H-L-U        VALUE 'HLU'.
+               88 H-D-R        VALUE 'HDR'.
+               88 H-D-L        VALUE 'HDL'.
+               88 H-R-D        VALUE 'HRD'.
+               88 H-L-D        VALUE 'HLD'.
+
+           COPY W-COORDINATES.
+           COPY B-COORDINATES.
+
+      *-----------------------
+       PROCEDURE DIVISION.
+      *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+       MAIN-PROCEDURE.
+           PERFORM A-INITIALIZE
+           PERFORM B-MAIN
+           .
+
+           A-INITIALIZE SECTION.
+
+      *******************************************************************
+      *                        A-INITIALIZE SECTION                     *
+      *******************************************************************
+
+               INITIALIZE WS-COUNTERS
+               SET NO-WINNER TO TRUE
+               SET W-TURN TO TRUE
+               SET N-MO TO TRUE
+               PERFORM AA-INIT-W-PIECE
+               PERFORM AB-INIT-B-PIECE
+           .
+
+           AA-INIT-W-PIECE SECTION.
+
+      *******************************************************************
+      *                     AA-INIT-W-PIECE SECTION                     *
+      *******************************************************************
+
+               MOVE 5 TO W-X-VAR(1)
+               MOVE 8 TO W-Y-POS(1)
+               MOVE 'WK' TO W-PIECE(1)
+
+
+               MOVE 4 TO W-X-VAR(2)
+               MOVE 8 TO W-Y-POS(2)
+               MOVE 'WQ' TO W-PIECE(2)
+
+               MOVE 1 TO W-X-VAR(3)
+               MOVE 8 TO W-Y-POS(3)
+               MOVE 'WR' TO W-PIECE(3)
+               MOVE 8 TO W-X-VAR(4)
+               MOVE 8 TO W-Y-POS(4)
+               MOVE 'WR' TO W-PIECE(4)
+
+               MOVE 2 TO W-X-VAR(5)
+               MOVE 8 TO W-Y-POS(5)
+               MOVE 'WH' TO W-PIECE(5)
+               MOVE 7 TO W-X-VAR(6)
+               MOVE 8 TO W-Y-POS(6)
+               MOVE 'WH' TO W-PIECE(6)
+
+               MOVE 3 TO W-X-VAR(7)
+               MOVE 8 TO W-Y-POS(7)
+               MOVE 'WB' TO W-PIECE(7)
+               MOVE 6 TO W-X-VAR(8)
+               MOVE 8 TO W-Y-POS(8)
+               MOVE 'WB' TO W-PIECE(8)
+
+               MOVE 9 TO T-COUNTER
+
+
+               PERFORM UNTIL T-COUNTER >= 17
+                   MOVE 1 TO W-X-VAR(T-COUNTER)
+                   ADD WS-COUNTER2 TO W-X-VAR(T-COUNTER)
+                   MOVE 7 TO W-Y-POS(T-COUNTER)
+                   MOVE 'WP' TO W-PIECE(T-COUNTER)
+                   ADD 1 TO WS-COUNTER2
+                   ADD 1 TO T-COUNTER
+               END-PERFORM
+
+               MOVE 1 TO T-COUNTER
+
+               PERFORM UNTIL T-COUNTER >= 17
+                   MOVE 'Y' TO W-FIRST(T-COUNTER)
+                   ADD 1 TO T-COUNTER
+               END-PERFORM
+
+               .
+
+           AB-INIT-B-PIECE SECTION.
+
+      *******************************************************************
+      *                     AB-INIT-B-PIECE SECTION                     *
+      *******************************************************************
+
+               MOVE 5 TO B-X-VAR(1)
+               MOVE 1 TO B-Y-POS(1)
+               MOVE 'BK' TO B-PIECE(1)
+
+               MOVE 4 TO B-X-VAR(2)
+               MOVE 1 TO B-Y-POS(2)
+               MOVE 'BQ' TO B-PIECE(2)
+
+               MOVE 1 TO B-X-VAR(3)
+               MOVE 1 TO B-Y-POS(3)
+               MOVE 'BR' TO B-PIECE(3)
+               MOVE 8 TO B-X-VAR(4)
+               MOVE 1 TO B-Y-POS(4)
+               MOVE 'BR' TO B-PIECE(4)
+
+               MOVE 2 TO B-X-VAR(5)
+               MOVE 1 TO B-Y-POS(5)
+               MOVE 'BH' TO B-PIECE(5)
+               MOVE 7 TO B-X-VAR(6)
+               MOVE 1 TO B-Y-POS(6)
+               MOVE 'BH' TO B-PIECE(6)
+
+               MOVE 3 TO B-X-VAR(7)
+               MOVE 1 TO B-Y-POS(7)
+               MOVE 'BB' TO B-PIECE(7)
+               MOVE 6 TO B-X-VAR(8)
+               MOVE 1 TO B-Y-POS(8)
+               MOVE 'BB' TO B-PIECE(8)
+
+               MOVE 9 TO T-COUNTER
+               MOVE 0 TO WS-COUNTER2
+
+
+               PERFORM UNTIL T-COUNTER >= 17
+                   MOVE 1 TO B-X-VAR(T-COUNTER)
+                   ADD WS-COUNTER2 TO B-X-VAR(T-COUNTER)
+                   MOVE 2 TO B-Y-POS(T-COUNTER)
+                   MOVE 'BP' TO B-PIECE(T-COUNTER)
+                   ADD 1 TO WS-COUNTER2
+                   ADD 1 TO T-COUNTER
+               END-PERFORM
+
+               MOVE 1 TO T-COUNTER
+
+               PERFORM UNTIL T-COUNTER >= 17
+                   MOVE 'Y' TO B-FIRST(T-COUNTER)
+                   ADD 1 TO T-COUNTER
+               END-PERFORM
+
+           .
+
+           B-MAIN SECTION.
+
+      *******************************************************************
+      *                         B-MAIN SECTION                          *
+      *******************************************************************
+
+           PERFORM C-DISP-BOARD
+           PERFORM F-CHECK-KING
+           PERFORM GA-ACCEPT-W-CORD
+
+           PERFORM UNTIL WINNER-SWITCH IS NOT = 'N'
+
+               PERFORM CC-MOVE
+      *         PERFORM DA-NEW-BOARD
+               PERFORM F-CHECK-KING
+               SET B-TURN TO TRUE
+               PERFORM GB-ACCEPT-B-CORD
+
+               PERFORM CC-MOVE
+      *         PERFORM DA-NEW-BOARD
+               PERFORM F-CHECK-KING
+               SET W-TURN TO TRUE
+               PERFORM GA-ACCEPT-W-CORD
+
+
+           END-PERFORM
+
+           STOP RUN.
+
+           .
+
+           C-DISP-BOARD SECTION.
+
+      *******************************************************************
+      *                        C-DISP-BOARD SECTION                     *
+      *******************************************************************
+
+           MOVE 1 TO WS-COUNTER
+
+           PERFORM UNTIL WS-COUNTER > 8
+
+               MOVE '1 -- -- -- -- -- -- -- -- 1' TO
+               BRD-ROWS(WS-COUNTER)
+
+               PERFORM CA-COMPUTE
+
+               PERFORM CB-MOVE
+
+               MOVE WS-COUNTER TO BRD-ROWS(WS-COUNTER)(1:1)
+               MOVE WS-COUNTER TO BRD-ROWS(WS-COUNTER)(27:1)
+
+               ADD 1 TO WS-COUNTER
+
+           END-PERFORM
+
+           .
+
+           CA-COMPUTE SECTION.
+
+      *******************************************************************
+      *                        CA-COMPUTE SECTION                       *
+      *******************************************************************
+
+           MOVE 1 TO T-COUNTER
+
+           PERFORM UNTIL T-COUNTER > 16
+               COMPUTE W-X-POS(T-COUNTER)
+                       = (W-X-VAR(T-COUNTER) * 3)
+
+               COMPUTE B-X-POS(T-COUNTER)
+                       = (B-X-VAR(T-COUNTER) * 3)
+
+
+               ADD 1 TO T-COUNTER
+           END-PERFORM
+
+           .
+
+           CB-MOVE SECTION.
+
+      *******************************************************************
+      *                        CB-MOVE SECTION                          *
+      *******************************************************************
+
+           MOVE 1 TO T-COUNTER
+
+           PERFORM UNTIL T-COUNTER >= 17
+
+              IF PLAYER-TURN = 'B'
+                 IF W-Y-POS(T-COUNTER) = WS-COUNTER
+                    MOVE W-PIECE(T-COUNTER) TO
+                    BRD-ROWS(WS-COUNTER)(W-X-POS(T-COUNTER):2)
+                 END-IF
+                 IF B-Y-POS(T-COUNTER) = WS-COUNTER
+                    MOVE B-PIECE(T-COUNTER) TO
+                    BRD-ROWS(WS-COUNTER)(B-X-POS(T-COUNTER):2)
+                 END-IF
+              END-IF
+              IF PLAYER-TURN = 'W'
+                 IF B-Y-POS(T-COUNTER) = WS-COUNTER
+                    MOVE B-PIECE(T-COUNTER) TO
+                    BRD-ROWS(WS-COUNTER)(B-X-POS(T-COUNTER):2)
+                 END-IF
+                 IF W-Y-POS(T-COUNTER) = WS-COUNTER
+                    MOVE W-PIECE(T-COUNTER) TO
+                    BRD-ROWS(WS-COUNTER)(W-X-POS(T-COUNTER):2)
+                 END-IF
+
+              END-IF
+
+              ADD 1 TO T-COUNTER
+
+
+
+           END-PERFORM
+           .
+
+           CC-MOVE SECTION.
+
+      *******************************************************************
+      *                          CC-MOVE SECTION                        *
+      *******************************************************************
+
+               PERFORM CA-COMPUTE
+      *         DISPLAY "PERFORMING CC-MOVE"
+               IF PLAYER-TURN = 'B'
+                   MOVE B-PIECE(U-COUNTER) TO
+                   BRD-ROWS(B-Y-POS(U-COUNTER))(B-X-POS(U-COUNTER):2)
+               ELSE IF PLAYER-TURN = 'W'
+                   MOVE W-PIECE(U-COUNTER) TO
+                   BRD-ROWS(W-Y-POS(U-COUNTER))(W-X-POS(U-COUNTER):2)
+               END-IF
+
+           .
+
+           DA-NEW-BOARD SECTION.
+
+      *******************************************************************
+      *                        DA-NEW-BOARD SECTION                     *
+      *******************************************************************
+
+               DISPLAY " "
+               DISPLAY " "
+
+               MOVE 1 TO WS-COUNTER
+
+
+               DISPLAY BRD-WIDTH
+
+               PERFORM UNTIL WS-COUNTER > 8
+                   DISPLAY  BRD-ROWS(WS-COUNTER)
+                   DISPLAY " "
+                   ADD 1 TO WS-COUNTER
+               END-PERFORM
+
+               DISPLAY BRD-WIDTH
+               DISPLAY " "
+           .
+
+           F-CHECK-KING SECTION.
+
+      *******************************************************************
+      *                        F-CHECK-KING SECTION                     *
+      *******************************************************************
+
+      *     DISPLAY "PERFORMING F-CHECK KING"
+
+           IF  B-PIECE(1) IS NOT = 'BK'
+               AND PLAYER-TURN = 'W'
+               SET W-WINNER TO TRUE
+               PERFORM DA-NEW-BOARD
+           DISPLAY " __      __  __  __  ______  ______  ____        __"
+           "  __  ______   ____    ______  _____   ____    __    __"
+           DISPLAY "/\ \  __/\ \/\ \/\ \/\__  _\/\__  _\/\  _`\     /\ "
+           "\/\ \/\__  _\ /\  _`\ /\__  _\/\  __`\/\  _`\ /\ \  /\ \"
+           DISPLAY "\ \ \/\ \ \ \ \ \_\ \/_/\ \/\/_/\ \/\ \ \L\_\   \ \"
+           " \ \ \/_/\ \/ \ \ \/\_\/_/\ \/\ \ \/\ \ \ \L\ \ `\`\\/'/"
+           DISPLAY " \ \ \ \ \ \ \ \  _  \ \ \ \   \ \ \ \ \  _\L    \ "
+           "\ \ \ \ \ \ \  \ \ \/_/_ \ \ \ \ \ \ \ \ \ ,  /`\ `\ /'"
+           DISPLAY "  \ \ \_/ \_\ \ \ \ \ \ \_\ \__ \ \ \ \ \ \L\ \   \"
+           " \ \_/ \ \_\ \__\ \ \L\ \ \ \ \ \ \ \_\ \ \ \\ \ `\ \ \"
+           DISPLAY "   \ `\___x___/\ \_\ \_\/\_____\ \ \_\ \ \____/    "
+           "\ `\___/ /\_____\\ \____/  \ \_\ \ \_____\ \_\ \_\ \ \_\"
+           DISPLAY "    '\/__//__/  \/_/\/_/\/_____/  \/_/  \/___/     "
+           " `\/__/  \/_____/ \/___/    \/_/  \/_____/\/_/\/ /  \/_/"
+
+               GOBACK
+           ELSE IF W-PIECE(1) IS NOT = 'WK'
+               AND PLAYER-TURN = 'B'
+               SET B-WINNER TO TRUE
+               PERFORM DA-NEW-BOARD
+           DISPLAY " ____     __       ______  ____     __  __      __ "
+           " __  ______   ____    ______  _____   ____    __    __"
+           DISPLAY "/\  _`\  /\ \     /\  _  \/\  _`\  /\ \/\ \    /\ \"
+           "/\ \/\__  _\ /\  _`\ /\__  _\/\  __`\/\  _`\ /\ \  /\ \"
+           DISPLAY "\ \ \L\ \\ \ \    \ \ \L\ \ \ \/\_\\ \ \/'/'   \ \ "
+           "\ \ \/_/\ \/ \ \ \/\_\/_/\ \/\ \ \/\ \ \ \L\ \ `\`\\/'/"
+           DISPLAY " \ \  _ <'\ \ \  __\ \  __ \ \ \/_/_\ \ , <     \ \"
+           " \ \ \ \ \ \  \ \ \/_/_ \ \ \ \ \ \ \ \ \ ,  /`\ `\ /'"
+           DISPLAY "  \ \ \L\ \\ \ \L\ \\ \ \/\ \ \ \L\ \\ \ \\`\    \ "
+           "\ \_/ \ \_\ \__\ \ \L\ \ \ \ \ \ \ \_\ \ \ \\ \ `\ \ \"
+           DISPLAY "   \ \____/ \ \____/ \ \_\ \_\ \____/ \ \_\ \_\   \"
+           " `\___/ /\_____\\ \____/  \ \_\ \ \_____\ \_\ \_\ \ \_\"
+           DISPLAY "    \/___/   \/___/   \/_/\/_/\/___/   \/_/\/_/    "
+           "`\/__/  \/_____/ \/___/    \/_/  \/_____/\/_/\/ /  \/_/"
+               GOBACK
+           END-IF
+
+           .
+
+           GA-ACCEPT-W-CORD SECTION.
+
+      *******************************************************************
+      *                    GA-ACCEPT-W-CORD SECTION                     *
+      *******************************************************************
+
+      *     DISPLAY "PERFORMING GA-ACCEPT-W-CORD"
+
+           SET NOT-VALID TO TRUE
+
+           PERFORM DA-NEW-BOARD
+
+           PERFORM UNTIL VALID-MOVE ='Y'
+               DISPLAY " "
+               DISPLAY 'SELECT YOUR WHITE PIECE'
+               ACCEPT INPUT-VARIABLE
+
+               PERFORM GAA-MOVE-INPUT
+
+               MOVE INPUT-VARIABLE(2:1) TO INPUT-Y-VARIABLE
+
+               PERFORM GAB-CHECK-VALID
+
+
+           END-PERFORM
+
+           .
+
+           GAA-MOVE-INPUT SECTION.
+
+      *******************************************************************
+      *                      GAA-MOVE-INPUT SECTION                     *
+      *******************************************************************
+
+           MOVE FUNCTION UPPER-CASE (INPUT-VARIABLE(1:1))
+               TO INPUT-X-VARIABLE
+
+           EVALUATE TRUE
+           WHEN INPUT-X-VARIABLE = 'A'
+               MOVE 1 TO INPUT-X-VARIABLE-N
+           WHEN INPUT-X-VARIABLE = 'B'
+               MOVE 2 TO INPUT-X-VARIABLE-N
+           WHEN INPUT-X-VARIABLE = 'C'
+               MOVE 3 TO INPUT-X-VARIABLE-N
+           WHEN INPUT-X-VARIABLE = 'D'
+               MOVE 4 TO INPUT-X-VARIABLE-N
+           WHEN INPUT-X-VARIABLE = 'E'
+               MOVE 5 TO INPUT-X-VARIABLE-N
+           WHEN INPUT-X-VARIABLE = 'F'
+               MOVE 6 TO INPUT-X-VARIABLE-N
+           WHEN INPUT-X-VARIABLE = 'G'
+               MOVE 7 TO INPUT-X-VARIABLE-N
+           WHEN INPUT-X-VARIABLE = 'H'
+               MOVE 8 TO INPUT-X-VARIABLE-N
+           WHEN OTHER
+               DISPLAY "ENTER A VALID POSITION"
+           END-EVALUATE
+
+
+           .
+
+           GAB-CHECK-VALID SECTION.
+
+      *******************************************************************
+      *                     GAB-CHECK-VALID SECTION                     *
+      *******************************************************************
+
+      *     DISPLAY "PERFORMING GAB-CHECK-VALID"
+
+           MOVE 1 TO U-COUNTER
+
+      **************************EVALUATE WHITE**************************
+
+           EVALUATE TRUE
+           WHEN PLAYER-TURN = 'W'
+               PERFORM UNTIL  INPUT-X-VARIABLE-N = W-X-VAR(U-COUNTER)
+                   AND INPUT-Y-VARIABLE = W-Y-POS(U-COUNTER)
+                   OR U-COUNTER >= 16
+                   ADD 1 TO U-COUNTER
+               END-PERFORM
+
+               EVALUATE TRUE
+               WHEN W-PIECE(U-COUNTER) = '--'
+                   SET NOT-VALID TO TRUE
+                   DISPLAY "NO VALID PIECE HERE"
+                   PERFORM GA-ACCEPT-W-CORD
+               WHEN INPUT-Y-VARIABLE = W-Y-POS(U-COUNTER)
+                   DISPLAY "YOU HAVE SELECTED " W-PIECE(U-COUNTER)
+                           " IN POSITION " INPUT-X-VARIABLE
+                           INPUT-Y-VARIABLE
+                           PERFORM GAC-ACCEPT-MOVE
+               WHEN OTHER
+                   DISPLAY "NOBODOY HERE"
+
+               END-EVALUATE
+
+      **************************EVALUATE BLACK**************************
+
+           WHEN PLAYER-TURN = 'B'
+               PERFORM UNTIL  INPUT-X-VARIABLE-N = B-X-VAR(U-COUNTER)
+                   AND INPUT-Y-VARIABLE = B-Y-POS(U-COUNTER)
+                   OR U-COUNTER >= 16
+                   ADD 1 TO U-COUNTER
+               END-PERFORM
+
+               EVALUATE TRUE
+               WHEN B-PIECE(U-COUNTER) = '--'
+                   SET NOT-VALID TO TRUE
+                   DISPLAY "NO VALID PIECE HERE"
+                   PERFORM GB-ACCEPT-B-CORD
+               WHEN INPUT-Y-VARIABLE = B-Y-POS(U-COUNTER)
+                   DISPLAY "YOU HAVE SELECTED " B-PIECE(U-COUNTER)
+                           " IN POSITION " INPUT-X-VARIABLE
+                           INPUT-Y-VARIABLE
+                           PERFORM GAC-ACCEPT-MOVE
+               WHEN OTHER
+                   DISPLAY "NOBODOY HERE"
+
+               END-EVALUATE
+
+           END-EVALUATE
+           .
+
+           GAC-ACCEPT-MOVE SECTION.
+
+      *******************************************************************
+      *                     GAC-ACCEPT-MOVE SECTION                     *
+      *******************************************************************
+
+      *     DISPLAY "PERFORMING GAC-ACCEPT-MOVE"
+
+           SET NOT-VALID TO TRUE
+
+           MOVE '|' TO BRD-ROWS(INPUT-Y-VARIABLE)
+           (((INPUT-X-VARIABLE-N * 3) - 1):1)
+           MOVE '|' TO BRD-ROWS(INPUT-Y-VARIABLE)
+           (((INPUT-X-VARIABLE-N * 3) + 2):1)
+
+           PERFORM DA-NEW-BOARD
+
+           PERFORM UNTIL VALID-MOVE ='Y'
+
+               MOVE ' ' TO BRD-ROWS(INPUT-Y-VARIABLE)
+               (((INPUT-X-VARIABLE-N * 3) - 1):1)
+               MOVE ' ' TO BRD-ROWS(INPUT-Y-VARIABLE)
+               (((INPUT-X-VARIABLE-N * 3) + 2):1)
+
+
+               DISPLAY 'MOVE THIS PIECE TO?'
+               ACCEPT INPUT-VARIABLE
+
+               PERFORM GAA-MOVE-INPUT
+
+               MOVE INPUT-VARIABLE(2:1) TO INPUT-Y-VARIABLE
+
+               PERFORM GAD-CHECK-MOVE
+
+
+           END-PERFORM
+           .
+
+           GAD-CHECK-MOVE SECTION.
+
+      *******************************************************************
+      *                      GAD-CHECK-MOVE SECTION                     *
+      *******************************************************************
+
+      *     DISPLAY "PERFORMING GAD-CHECK-MOVE"
+           SET N-MO TO TRUE
+      *     DISPLAY "U-COUNTER " U-COUNTER
+           EVALUATE U-COUNTER
+           WHEN 1
+      *         DISPLAY "KING"
+               PERFORM HA-CHECK-KING
+           WHEN 2
+      *         DISPLAY "QUEEN"
+               PERFORM HB-CHECK-QUEEN
+           WHEN 3 THRU 4
+      *         DISPLAY "ROOK"
+               PERFORM HC-CHECK-ROOK
+           WHEN 5 THRU 6
+      *         DISPLAY "HORSE"
+               PERFORM HD-CHECK-HORSE
+           WHEN 7 THRU 8
+      *         DISPLAY "BISHOP"
+               PERFORM HE-CHECK-BISHOP
+           WHEN  9 THRU 17
+      *         DISPLAY "PAWN"
+               PERFORM HF-CHECK-PAWN
+           END-EVALUATE
+           .
+
+           GB-ACCEPT-B-CORD SECTION.
+
+      *******************************************************************
+      *                    GB-ACCEPT-B-CORD SECTION                     *
+      *******************************************************************
+
+      *     DISPLAY "PERFORMING GB-ACCEPT-B-CORD"
+
+           SET NOT-VALID TO TRUE
+
+           PERFORM DA-NEW-BOARD
+
+           PERFORM UNTIL VALID-MOVE ='Y'
+               DISPLAY " "
+               DISPLAY 'SELECT YOUR BLACK PIECE'
+
+               ACCEPT INPUT-VARIABLE
+
+               PERFORM GAA-MOVE-INPUT
+
+               MOVE INPUT-VARIABLE(2:1) TO INPUT-Y-VARIABLE
+
+               PERFORM GAB-CHECK-VALID
+
+
+           END-PERFORM
+           .
+
+           HA-CHECK-KING SECTION.
+
+      *******************************************************************
+      *                       HA-CHECK-KING SECTION                     *
+      *******************************************************************
+
+      **************************EVALUATE WHITE**************************
+
+      *     DISPLAY "PERFORMING HA-CHECK-KING"
+
+           EVALUATE TRUE
+           WHEN PLAYER-TURN = 'W'
+               EVALUATE TRUE
+               WHEN
+               (INPUT-X-VARIABLE-N - W-X-VAR(U-COUNTER) > 1) OR
+               (INPUT-X-VARIABLE-N - W-X-VAR(U-COUNTER) < -1) OR
+               (INPUT-Y-VARIABLE - W-Y-POS(U-COUNTER) > 1) OR
+               (INPUT-Y-VARIABLE - W-Y-POS(U-COUNTER) < -1)
+                   DISPLAY "INVALID MOVE, A KING CAN ONLY MOVE 1 IN "
+                   "ANY DIRECTION"
+                   SET NOT-VALID TO TRUE
+                   PERFORM GA-ACCEPT-W-CORD
+
+               WHEN (W-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N) =
+               (W-Y-POS(U-COUNTER) - INPUT-Y-VARIABLE) AND
+               (W-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N >=0)
+               AND TYPE-MOVE = 'NMO'
+
+                   SET D-L-U TO TRUE
+                   SET IS-VALID TO TRUE
+
+               WHEN
+               (INPUT-X-VARIABLE-N - W-X-VAR(U-COUNTER)) =
+               (W-Y-POS(U-COUNTER)- INPUT-Y-VARIABLE) AND
+               (INPUT-X-VARIABLE-N - W-X-VAR(U-COUNTER) >=0 )
+               AND TYPE-MOVE = 'NMO'
+
+                   SET D-R-U TO TRUE
+                   SET IS-VALID TO TRUE
+
+               WHEN
+              (W-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N) =
+              (INPUT-Y-VARIABLE - W-Y-POS(U-COUNTER))
+              AND TYPE-MOVE = 'NMO'
+
+                   SET D-L-D TO TRUE
+                   SET IS-VALID TO TRUE
+
+               WHEN
+               (INPUT-X-VARIABLE-N - W-X-VAR(U-COUNTER) ) =
+               (INPUT-Y-VARIABLE - W-Y-POS(U-COUNTER))
+               AND TYPE-MOVE = 'NMO'
+
+                   SET D-R-D TO TRUE
+                   SET IS-VALID TO TRUE
+
+               WHEN
+               (INPUT-X-VARIABLE-N = W-X-VAR(U-COUNTER) AND
+               INPUT-Y-VARIABLE IS NOT = W-Y-POS(U-COUNTER))
+               AND TYPE-MOVE = 'NMO'
+
+                   IF INPUT-Y-VARIABLE > W-Y-POS(U-COUNTER)
+                       SET S-DN TO TRUE
+                       SET IS-VALID TO TRUE
+                   ELSE IF INPUT-Y-VARIABLE < W-Y-POS(U-COUNTER)
+                       SET S-UP TO TRUE
+                       SET IS-VALID TO TRUE
+                   END-IF
+
+                   SET IS-VALID TO TRUE
+
+               WHEN
+               (INPUT-X-VARIABLE-N IS NOT = W-X-VAR(U-COUNTER) AND
+               INPUT-Y-VARIABLE = W-Y-POS(U-COUNTER))
+               AND TYPE-MOVE = 'NMO'
+
+                   IF INPUT-X-VARIABLE-N > W-X-VAR(U-COUNTER)
+                       SET S-RI TO TRUE
+                       SET IS-VALID TO TRUE
+                   ELSE IF INPUT-X-VARIABLE-N < W-X-VAR(U-COUNTER)
+                       SET S-LE TO TRUE
+                       SET IS-VALID TO TRUE
+                   END-IF
+
+               WHEN OTHER
+                   DISPLAY "INVALID MOVE"
+                   SET NOT-VALID TO TRUE
+                   PERFORM GA-ACCEPT-W-CORD
+
+               END-EVALUATE
+
+               IF VALID-MOVE = 'Y' AND TYPE-MOVE NOT = 'NMO'
+                   PERFORM IBA-CHECK-POS
+               END-IF
+
+      **************************EVALUATE BLACK**************************
+
+           WHEN PLAYER-TURN = 'B'
+
+           EVALUATE TRUE
+               WHEN (B-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N) =
+               (B-Y-POS(U-COUNTER)- INPUT-Y-VARIABLE) AND
+               (B-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N >=0)
+               AND TYPE-MOVE = 'NMO'
+
+                   SET D-L-U TO TRUE
+                   SET IS-VALID TO TRUE
+
+               WHEN
+               (INPUT-X-VARIABLE-N - B-X-VAR(U-COUNTER)) =
+               (B-Y-POS(U-COUNTER)- INPUT-Y-VARIABLE) AND
+               INPUT-X-VARIABLE-N -(B-X-VAR(U-COUNTER)) >=0
+               AND TYPE-MOVE = 'NMO'
+
+                   SET D-R-U TO TRUE
+                   SET IS-VALID TO TRUE
+
+               WHEN
+              (B-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N) =
+              (INPUT-Y-VARIABLE - B-Y-POS(U-COUNTER))
+              AND TYPE-MOVE = 'NMO'
+
+                   SET D-L-D TO TRUE
+                   SET IS-VALID TO TRUE
+
+               WHEN
+               (INPUT-X-VARIABLE-N - B-X-VAR(U-COUNTER) ) =
+               (INPUT-Y-VARIABLE - B-Y-POS(U-COUNTER))
+               AND TYPE-MOVE = 'NMO'
+
+                   SET D-R-D TO TRUE
+                   SET IS-VALID TO TRUE
+
+               WHEN
+               (INPUT-X-VARIABLE-N = B-X-VAR(U-COUNTER) AND
+               INPUT-Y-VARIABLE IS NOT = B-Y-POS(U-COUNTER))
+               AND TYPE-MOVE = 'NMO'
+
+                   IF INPUT-Y-VARIABLE > B-Y-POS(U-COUNTER)
+                       SET S-DN TO TRUE
+                       SET IS-VALID TO TRUE
+                   ELSE IF INPUT-Y-VARIABLE < B-Y-POS(U-COUNTER)
+                       SET S-UP TO TRUE
+                       SET IS-VALID TO TRUE
+                   END-IF
+
+                   SET IS-VALID TO TRUE
+
+               WHEN
+               (INPUT-X-VARIABLE-N IS NOT = B-X-VAR(U-COUNTER) AND
+               INPUT-Y-VARIABLE = B-Y-POS(U-COUNTER))
+               AND TYPE-MOVE = 'NMO'
+
+                   IF INPUT-X-VARIABLE-N > B-X-VAR(U-COUNTER)
+                       SET S-RI TO TRUE
+                       SET IS-VALID TO TRUE
+                   ELSE IF INPUT-X-VARIABLE-N < B-X-VAR(U-COUNTER)
+                       SET S-LE TO TRUE
+                       SET IS-VALID TO TRUE
+                   END-IF
+
+               WHEN
+               (INPUT-X-VARIABLE-N - B-X-VAR(U-COUNTER) > 1) OR
+               (INPUT-X-VARIABLE-N - B-X-VAR(U-COUNTER) < -1) OR
+               (INPUT-Y-VARIABLE - B-Y-POS(U-COUNTER) > 1) OR
+               (INPUT-Y-VARIABLE - B-Y-POS(U-COUNTER) < -1)
+                   DISPLAY "INVALID MOVE, A KING CAN ONLY MOVE 1 IN "
+                   "ANY DIRECTION"
+                   SET NOT-VALID TO TRUE
+                   PERFORM GB-ACCEPT-B-CORD
+
+
+               WHEN OTHER
+                   DISPLAY "INVALID MOVE"
+                   SET NOT-VALID TO TRUE
+                   PERFORM GB-ACCEPT-B-CORD
+
+               END-EVALUATE
+
+               IF VALID-MOVE = 'Y' AND TYPE-MOVE NOT = 'NMO'
+                   PERFORM IBA-CHECK-POS
+               END-IF
+
+           END-EVALUATE
+
+           .
+
+           HB-CHECK-QUEEN SECTION.
+
+      *******************************************************************
+      *                      HB-CHECK-QUEEN SECTION                     *
+      *******************************************************************
+
+      *     DISPLAY "PERFORMING HB-CHECK-QUEEN"
+           SET N-MO TO TRUE
+
+      **************************EVALUATE WHITE**************************
+
+           EVALUATE TRUE
+           WHEN PLAYER-TURN = 'W'
+               EVALUATE TRUE
+               WHEN (W-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N) =
+               (W-Y-POS(U-COUNTER) - INPUT-Y-VARIABLE) AND
+               (W-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N >=0)
+               AND TYPE-MOVE = 'NMO'
+
+                   SET D-L-U TO TRUE
+                   SET IS-VALID TO TRUE
+
+               WHEN
+               (INPUT-X-VARIABLE-N - W-X-VAR(U-COUNTER)) =
+               (W-Y-POS(U-COUNTER)- INPUT-Y-VARIABLE) AND
+               (INPUT-X-VARIABLE-N - W-X-VAR(U-COUNTER) >=0 )
+               AND TYPE-MOVE = 'NMO'
+
+                   SET D-R-U TO TRUE
+                   SET IS-VALID TO TRUE
+
+               WHEN
+              (W-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N) =
+              (INPUT-Y-VARIABLE - W-Y-POS(U-COUNTER))
+              AND TYPE-MOVE = 'NMO'
+
+                   SET D-L-D TO TRUE
+                   SET IS-VALID TO TRUE
+
+               WHEN
+               (INPUT-X-VARIABLE-N - W-X-VAR(U-COUNTER) ) =
+               (INPUT-Y-VARIABLE - W-Y-POS(U-COUNTER))
+               AND TYPE-MOVE = 'NMO'
+
+                   SET D-R-D TO TRUE
+                   SET IS-VALID TO TRUE
+
+               WHEN
+               (INPUT-X-VARIABLE-N = W-X-VAR(U-COUNTER) AND
+               INPUT-Y-VARIABLE IS NOT = W-Y-POS(U-COUNTER))
+               AND TYPE-MOVE = 'NMO'
+
+                   IF INPUT-Y-VARIABLE > W-Y-POS(U-COUNTER)
+                       SET S-DN TO TRUE
+                       SET IS-VALID TO TRUE
+                   ELSE IF INPUT-Y-VARIABLE < W-Y-POS(U-COUNTER)
+                       SET S-UP TO TRUE
+                       SET IS-VALID TO TRUE
+                   END-IF
+
+                   SET IS-VALID TO TRUE
+
+               WHEN
+               (INPUT-X-VARIABLE-N IS NOT = W-X-VAR(U-COUNTER) AND
+               INPUT-Y-VARIABLE = W-Y-POS(U-COUNTER))
+               AND TYPE-MOVE = 'NMO'
+
+                   IF INPUT-X-VARIABLE-N > W-X-VAR(U-COUNTER)
+                       SET S-RI TO TRUE
+                       SET IS-VALID TO TRUE
+                   ELSE IF INPUT-X-VARIABLE-N < W-X-VAR(U-COUNTER)
+                       SET S-LE TO TRUE
+                       SET IS-VALID TO TRUE
+                   END-IF
+
+
+               WHEN OTHER
+                   DISPLAY "INVALID MOVE"
+                   SET NOT-VALID TO TRUE
+                   PERFORM GA-ACCEPT-W-CORD
+
+               END-EVALUATE
+
+               IF VALID-MOVE = 'Y' AND TYPE-MOVE NOT = 'NMO'
+                   PERFORM IBA-CHECK-POS
+               END-IF
+
+      **************************EVALUATE BLACK**************************
+
+           WHEN PLAYER-TURN = 'B'
+
+           EVALUATE TRUE
+               WHEN (B-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N) =
+               (B-Y-POS(U-COUNTER)- INPUT-Y-VARIABLE) AND
+               (B-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N >=0)
+               AND TYPE-MOVE = 'NMO'
+
+                   SET D-L-U TO TRUE
+                   SET IS-VALID TO TRUE
+
+               WHEN
+               (INPUT-X-VARIABLE-N - B-X-VAR(U-COUNTER)) =
+               (B-Y-POS(U-COUNTER)- INPUT-Y-VARIABLE) AND
+               INPUT-X-VARIABLE-N -(B-X-VAR(U-COUNTER)) >=0
+               AND TYPE-MOVE = 'NMO'
+
+                   SET D-R-U TO TRUE
+                   SET IS-VALID TO TRUE
+
+               WHEN
+              (B-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N) =
+              (INPUT-Y-VARIABLE - B-Y-POS(U-COUNTER))
+              AND TYPE-MOVE = 'NMO'
+
+                   SET D-L-D TO TRUE
+                   SET IS-VALID TO TRUE
+
+               WHEN
+               (INPUT-X-VARIABLE-N - B-X-VAR(U-COUNTER) ) =
+               (INPUT-Y-VARIABLE - B-Y-POS(U-COUNTER))
+               AND TYPE-MOVE = 'NMO'
+
+                   SET D-R-D TO TRUE
+                   SET IS-VALID TO TRUE
+
+               WHEN
+               (INPUT-X-VARIABLE-N = B-X-VAR(U-COUNTER) AND
+               INPUT-Y-VARIABLE IS NOT = B-Y-POS(U-COUNTER))
+               AND TYPE-MOVE = 'NMO'
+
+                   IF INPUT-Y-VARIABLE > B-Y-POS(U-COUNTER)
+                       SET S-DN TO TRUE
+                       SET IS-VALID TO TRUE
+                   ELSE IF INPUT-Y-VARIABLE < B-Y-POS(U-COUNTER)
+                       SET S-UP TO TRUE
+                       SET IS-VALID TO TRUE
+                   END-IF
+
+                   SET IS-VALID TO TRUE
+
+               WHEN
+               (INPUT-X-VARIABLE-N IS NOT = B-X-VAR(U-COUNTER) AND
+               INPUT-Y-VARIABLE = B-Y-POS(U-COUNTER))
+               AND TYPE-MOVE = 'NMO'
+
+                   IF INPUT-X-VARIABLE-N > B-X-VAR(U-COUNTER)
+                       SET S-RI TO TRUE
+                       SET IS-VALID TO TRUE
+                   ELSE IF INPUT-X-VARIABLE-N < B-X-VAR(U-COUNTER)
+                       SET S-LE TO TRUE
+                       SET IS-VALID TO TRUE
+                   END-IF
+
+
+               WHEN OTHER
+                   DISPLAY "INVALID MOVE"
+                   SET NOT-VALID TO TRUE
+                   PERFORM GB-ACCEPT-B-CORD
+
+               END-EVALUATE
+
+               IF VALID-MOVE = 'Y' AND TYPE-MOVE NOT = 'NMO'
+                   DISPLAY "MOVE IS VALID, WILL PERFORM IBA-CHECK"
+                   PERFORM IBA-CHECK-POS
+               END-IF
+
+           END-EVALUATE
+
+
+           .
+
+           HC-CHECK-ROOK SECTION.
+
+      *******************************************************************
+      *                      HC-CHECK-ROOK SECTION                      *
+      *******************************************************************
+
+      *     DISPLAY "PERFORMING HC-CHECK-ROOK"
+
+           SET N-MO TO TRUE
+
+           EVALUATE TRUE
+
+      **************************EVALUATE WHITE**************************
+
+           WHEN PLAYER-TURN = 'W'
+               EVALUATE TRUE
+               WHEN
+               (INPUT-X-VARIABLE-N = W-X-VAR(U-COUNTER) AND
+               INPUT-Y-VARIABLE IS NOT = W-Y-POS(U-COUNTER))
+               AND TYPE-MOVE = 'NMO'
+
+                   IF INPUT-Y-VARIABLE > W-Y-POS(U-COUNTER)
+                       SET S-DN TO TRUE
+                       SET IS-VALID TO TRUE
+                   ELSE IF INPUT-Y-VARIABLE < W-Y-POS(U-COUNTER)
+                       SET S-UP TO TRUE
+                       SET IS-VALID TO TRUE
+                   END-IF
+
+                   SET IS-VALID TO TRUE
+
+               WHEN
+               (INPUT-X-VARIABLE-N IS NOT = W-X-VAR(U-COUNTER) AND
+               INPUT-Y-VARIABLE = W-Y-POS(U-COUNTER))
+               AND TYPE-MOVE = 'NMO'
+
+                   IF INPUT-X-VARIABLE-N > W-X-VAR(U-COUNTER)
+                       SET S-RI TO TRUE
+                       SET IS-VALID TO TRUE
+                   ELSE IF INPUT-X-VARIABLE-N < W-X-VAR(U-COUNTER)
+                       SET S-LE TO TRUE
+                       SET IS-VALID TO TRUE
+                   END-IF
+
+
+               WHEN OTHER
+                   DISPLAY "INVALID MOVE"
+                   SET NOT-VALID TO TRUE
+                   PERFORM GA-ACCEPT-W-CORD
+
+               END-EVALUATE
+
+           WHEN PLAYER-TURN = 'B'
+               EVALUATE TRUE
+
+      **************************EVALUATE BLACK**************************
+
+               WHEN
+               (INPUT-X-VARIABLE-N = B-X-VAR(U-COUNTER) AND
+               INPUT-Y-VARIABLE IS NOT = B-Y-POS(U-COUNTER))
+               AND TYPE-MOVE = 'NMO'
+
+                   IF INPUT-Y-VARIABLE > B-Y-POS(U-COUNTER)
+                       SET S-DN TO TRUE
+                       SET IS-VALID TO TRUE
+                   ELSE IF INPUT-Y-VARIABLE < B-Y-POS(U-COUNTER)
+                       SET S-UP TO TRUE
+                       SET IS-VALID TO TRUE
+                   END-IF
+
+                   SET IS-VALID TO TRUE
+
+               WHEN
+               (INPUT-X-VARIABLE-N IS NOT = B-X-VAR(U-COUNTER) AND
+               INPUT-Y-VARIABLE = B-Y-POS(U-COUNTER))
+               AND TYPE-MOVE = 'NMO'
+
+                   IF INPUT-X-VARIABLE-N > B-X-VAR(U-COUNTER)
+                       SET S-RI TO TRUE
+                       SET IS-VALID TO TRUE
+                   ELSE IF INPUT-X-VARIABLE-N < B-X-VAR(U-COUNTER)
+                       SET S-LE TO TRUE
+                       SET IS-VALID TO TRUE
+                   END-IF
+
+
+               WHEN OTHER
+                   DISPLAY "INVALID MOVE"
+                   SET NOT-VALID TO TRUE
+                   PERFORM GA-ACCEPT-W-CORD
+
+               END-EVALUATE
+
+
+           END-EVALUATE
+
+           IF VALID-MOVE = 'Y' AND TYPE-MOVE NOT = 'NMO'
+                   PERFORM IBA-CHECK-POS
+               END-IF
+
+           .
+
+           HD-CHECK-HORSE SECTION.
+
+      *******************************************************************
+      *                     HD-CHECK-HORSE SECTION                      *
+      *******************************************************************
+
+      *     DISPLAY "PERFORMING HD-CHECK-HORSE"
+
+           SET N-MO TO TRUE
+
+           EVALUATE TRUE
+
+      **************************EVALUATE WHITE**************************
+
+           WHEN PLAYER-TURN = 'W'
+
+               EVALUATE TRUE
+               WHEN (INPUT-X-VARIABLE-N - 1) = W-X-VAR(U-COUNTER)
+                   AND (INPUT-Y-VARIABLE + 2) = W-Y-POS(U-COUNTER)
+
+                   SET H-U-R TO TRUE
+                   SET IS-VALID TO TRUE
+
+      *             DISPLAY TYPE-MOVE
+
+               WHEN (INPUT-X-VARIABLE-N + 1) = W-X-VAR(U-COUNTER)
+                   AND (INPUT-Y-VARIABLE + 2) = W-Y-POS(U-COUNTER)
+
+                   SET H-U-L TO TRUE
+                   SET IS-VALID TO TRUE
+
+      *             DISPLAY TYPE-MOVE
+
+               WHEN (INPUT-X-VARIABLE-N - 2) = W-X-VAR(U-COUNTER)
+                   AND (INPUT-Y-VARIABLE + 1) = W-Y-POS(U-COUNTER)
+
+                   SET H-R-U TO TRUE
+                   SET IS-VALID TO TRUE
+
+      *             DISPLAY TYPE-MOVE
+
+               WHEN (INPUT-X-VARIABLE-N + 2) = W-X-VAR(U-COUNTER)
+                   AND (INPUT-Y-VARIABLE + 1) = W-Y-POS(U-COUNTER)
+
+                   SET H-L-U TO TRUE
+                   SET IS-VALID TO TRUE
+
+      *             DISPLAY TYPE-MOVE
+
+                WHEN (INPUT-X-VARIABLE-N - 1) = W-X-VAR(U-COUNTER)
+                   AND (INPUT-Y-VARIABLE - 2) = W-Y-POS(U-COUNTER)
+
+                   SET H-D-R TO TRUE
+                   SET IS-VALID TO TRUE
+
+      *             DISPLAY TYPE-MOVE
+
+               WHEN (INPUT-X-VARIABLE-N + 1) = W-X-VAR(U-COUNTER)
+                   AND (INPUT-Y-VARIABLE - 2) = W-Y-POS(U-COUNTER)
+
+                   SET H-D-L TO TRUE
+                   SET IS-VALID TO TRUE
+
+      *             DISPLAY TYPE-MOVE
+
+               WHEN (INPUT-X-VARIABLE-N - 2) = W-X-VAR(U-COUNTER)
+                   AND (INPUT-Y-VARIABLE - 1) = W-Y-POS(U-COUNTER)
+
+                   SET H-R-D TO TRUE
+                   SET IS-VALID TO TRUE
+
+      *             DISPLAY TYPE-MOVE
+
+               WHEN (INPUT-X-VARIABLE-N + 2) = W-X-VAR(U-COUNTER)
+                   AND (INPUT-Y-VARIABLE - 1) = W-Y-POS(U-COUNTER)
+
+                   SET H-L-D TO TRUE
+                   SET IS-VALID TO TRUE
+
+      *             DISPLAY TYPE-MOVE
+
+               WHEN OTHER
+                   DISPLAY "INVALID HORSE MOVE"
+
+               END-EVALUATE
+
+      **************************EVALUATE BLACK**************************
+
+           WHEN PLAYER-TURN = 'B'
+               EVALUATE TRUE
+               WHEN (INPUT-X-VARIABLE-N - 1) = B-X-VAR(U-COUNTER)
+                   AND (INPUT-Y-VARIABLE + 2) = B-Y-POS(U-COUNTER)
+
+                   SET H-U-R TO TRUE
+                   SET IS-VALID TO TRUE
+
+      *             DISPLAY TYPE-MOVE
+
+               WHEN (INPUT-X-VARIABLE-N + 1) = B-X-VAR(U-COUNTER)
+                   AND (INPUT-Y-VARIABLE + 2) = B-Y-POS(U-COUNTER)
+
+                   SET H-U-L TO TRUE
+                   SET IS-VALID TO TRUE
+
+      *             DISPLAY TYPE-MOVE
+
+               WHEN (INPUT-X-VARIABLE-N - 2) = B-X-VAR(U-COUNTER)
+                   AND (INPUT-Y-VARIABLE + 1) = B-Y-POS(U-COUNTER)
+
+                   SET H-R-U TO TRUE
+                   SET IS-VALID TO TRUE
+
+      *             DISPLAY TYPE-MOVE
+
+               WHEN (INPUT-X-VARIABLE-N + 2) = B-X-VAR(U-COUNTER)
+                   AND (INPUT-Y-VARIABLE + 1) = B-Y-POS(U-COUNTER)
+
+                   SET H-L-U TO TRUE
+                   SET IS-VALID TO TRUE
+
+      *             DISPLAY TYPE-MOVE
+
+                WHEN (INPUT-X-VARIABLE-N - 1) = B-X-VAR(U-COUNTER)
+                   AND (INPUT-Y-VARIABLE - 2) = B-Y-POS(U-COUNTER)
+
+                   SET H-D-R TO TRUE
+                   SET IS-VALID TO TRUE
+
+      *             DISPLAY TYPE-MOVE
+
+               WHEN (INPUT-X-VARIABLE-N + 1) = B-X-VAR(U-COUNTER)
+                   AND (INPUT-Y-VARIABLE - 2) = B-Y-POS(U-COUNTER)
+
+                   SET H-D-L TO TRUE
+                   SET IS-VALID TO TRUE
+
+      *             DISPLAY TYPE-MOVE
+
+               WHEN (INPUT-X-VARIABLE-N - 2) = B-X-VAR(U-COUNTER)
+                   AND (INPUT-Y-VARIABLE - 1) = B-Y-POS(U-COUNTER)
+
+                   SET H-R-D TO TRUE
+                   SET IS-VALID TO TRUE
+
+      *             DISPLAY TYPE-MOVE
+
+               WHEN (INPUT-X-VARIABLE-N + 2) = B-X-VAR(U-COUNTER)
+                   AND (INPUT-Y-VARIABLE - 1) = B-Y-POS(U-COUNTER)
+
+                   SET H-L-D TO TRUE
+                   SET IS-VALID TO TRUE
+
+      *             DISPLAY TYPE-MOVE
+
+               WHEN OTHER
+                   DISPLAY "INVALID HORSE MOVE"
+
+               END-EVALUATE
+
+           END-EVALUATE
+
+           IF VALID-MOVE = 'Y' AND TYPE-MOVE NOT = 'NMO'
+               PERFORM IBA-CHECK-POS
+           END-IF
+
+
+           .
+
+           HE-CHECK-BISHOP SECTION.
+
+      *******************************************************************
+      *                    HE-CHECK-BISHOP SECTION                      *
+      *******************************************************************
+
+      *     DISPLAY "PERFORMING HE-CHECK-BISHOP"
+
+           SET N-MO TO TRUE
+
+           EVALUATE TRUE
+
+      **************************EVALUATE WHITE**************************
+
+           WHEN PLAYER-TURN = 'W'
+               EVALUATE TRUE
+               WHEN (W-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N) =
+               (W-Y-POS(U-COUNTER) - INPUT-Y-VARIABLE) AND
+               (W-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N >=0)
+               AND TYPE-MOVE = 'NMO'
+
+                   SET D-L-U TO TRUE
+                   SET IS-VALID TO TRUE
+
+               WHEN
+               (INPUT-X-VARIABLE-N - W-X-VAR(U-COUNTER)) =
+               (W-Y-POS(U-COUNTER)- INPUT-Y-VARIABLE) AND
+               (INPUT-X-VARIABLE-N - W-X-VAR(U-COUNTER) >=0 )
+               AND TYPE-MOVE = 'NMO'
+
+                   SET D-R-U TO TRUE
+                   SET IS-VALID TO TRUE
+
+               WHEN
+              (W-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N) =
+              (INPUT-Y-VARIABLE - W-Y-POS(U-COUNTER))
+              AND TYPE-MOVE = 'NMO'
+
+                   SET D-L-D TO TRUE
+                   SET IS-VALID TO TRUE
+
+               WHEN
+               (INPUT-X-VARIABLE-N - W-X-VAR(U-COUNTER) ) =
+               (INPUT-Y-VARIABLE - W-Y-POS(U-COUNTER))
+               AND TYPE-MOVE = 'NMO'
+
+                   SET D-R-D TO TRUE
+                   SET IS-VALID TO TRUE
+
+               WHEN OTHER
+                   DISPLAY "INVALID MOVE"
+                   SET NOT-VALID TO TRUE
+                   PERFORM GA-ACCEPT-W-CORD
+
+              END-EVALUATE
+
+      *        DISPLAY "EVALUATE COMPLETE"
+
+              IF VALID-MOVE = 'Y' AND TYPE-MOVE NOT = 'NMO'
+                   PERFORM IBA-CHECK-POS
+              END-IF
+
+      **************************EVALUATE BLACK**************************
+
+           WHEN PLAYER-TURN = 'B'
+               EVALUATE TRUE
+               WHEN (B-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N) =
+               (B-Y-POS(U-COUNTER) - INPUT-Y-VARIABLE) AND
+               (B-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N >=0)
+               AND TYPE-MOVE = 'NMO'
+
+                   SET D-L-U TO TRUE
+                   SET IS-VALID TO TRUE
+
+               WHEN
+               (INPUT-X-VARIABLE-N - B-X-VAR(U-COUNTER)) =
+               (B-Y-POS(U-COUNTER)- INPUT-Y-VARIABLE) AND
+               (INPUT-X-VARIABLE-N - B-X-VAR(U-COUNTER) >=0 )
+               AND TYPE-MOVE = 'NMO'
+
+                   SET D-R-U TO TRUE
+                   SET IS-VALID TO TRUE
+
+               WHEN
+              (B-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N) =
+              (INPUT-Y-VARIABLE - B-Y-POS(U-COUNTER))
+              AND TYPE-MOVE = 'NMO'
+
+                   SET D-L-D TO TRUE
+                   SET IS-VALID TO TRUE
+
+               WHEN
+               (INPUT-X-VARIABLE-N - B-X-VAR(U-COUNTER) ) =
+               (INPUT-Y-VARIABLE - B-Y-POS(U-COUNTER))
+               AND TYPE-MOVE = 'NMO'
+
+                   SET D-R-D TO TRUE
+                   SET IS-VALID TO TRUE
+
+               WHEN OTHER
+                   DISPLAY "INVALID MOVE"
+                   SET NOT-VALID TO TRUE
+                   PERFORM GB-ACCEPT-B-CORD
+
+              END-EVALUATE
+
+      *        DISPLAY "EVALUATE COMPLETE"
+
+           IF VALID-MOVE = 'Y' AND TYPE-MOVE NOT = 'NMO'
+                   PERFORM IBA-CHECK-POS
+               END-IF
+
+           END-EVALUATE
+
+
+
+           .
+
+           HF-CHECK-PAWN SECTION.
+
+      *******************************************************************
+      *                      HF-CHECK-PAWN SECTION                      *
+      *******************************************************************
+
+      *     DISPLAY "PERFORMING HF-CHECK-PAWN"
+
+           SET N-MO TO TRUE
+
+           EVALUATE TRUE
+
+      **************************EVALUATE WHITE**************************
+
+           WHEN PLAYER-TURN = 'W'
+               EVALUATE TRUE
+               WHEN
+               W-FIRST(U-COUNTER) = 'Y' AND
+               (W-Y-POS(U-COUNTER) - INPUT-Y-VARIABLE > 2)
+
+                   DISPLAY "INVALID MOVE, A PAWN CAN ONLY MOVE 2 "
+                   "ON FIRST MOVE"
+                   SET NOT-VALID TO TRUE
+                   PERFORM GA-ACCEPT-W-CORD
+
+               WHEN
+               W-FIRST(U-COUNTER) = 'N' AND
+               (W-Y-POS(U-COUNTER) - INPUT-Y-VARIABLE  > 1)
+
+                   DISPLAY "INVALID MOVE, A PAWN CAN ONLY MOVE 1 "
+                   "AFTER FIRST MOVE"
+                   SET NOT-VALID TO TRUE
+                   PERFORM GA-ACCEPT-W-CORD
+
+               WHEN (W-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N) =
+               (W-Y-POS(U-COUNTER) - INPUT-Y-VARIABLE) AND
+               (W-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N >=0)
+               AND
+               (W-Y-POS(U-COUNTER) - INPUT-Y-VARIABLE  = 1)
+               AND
+               (W-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N  = 1)
+               AND TYPE-MOVE = 'NMO'
+
+                       SET D-L-U TO TRUE
+                       SET IS-VALID TO TRUE
+
+               WHEN
+               (INPUT-X-VARIABLE-N - W-X-VAR(U-COUNTER)) =
+               (W-Y-POS(U-COUNTER)- INPUT-Y-VARIABLE) AND
+               (INPUT-X-VARIABLE-N - W-X-VAR(U-COUNTER) >= 0 )
+               AND
+               (W-Y-POS(U-COUNTER) - INPUT-Y-VARIABLE = 1 )
+               AND
+               (INPUT-X-VARIABLE-N - W-X-VAR(U-COUNTER) = 1)
+               AND TYPE-MOVE = 'NMO'
+
+                   SET D-R-U TO TRUE
+                   SET IS-VALID TO TRUE
+
+               WHEN
+               (INPUT-X-VARIABLE-N = W-X-VAR(U-COUNTER) AND
+               INPUT-Y-VARIABLE IS NOT = W-Y-POS(U-COUNTER))
+               AND TYPE-MOVE = 'NMO'
+
+                   IF INPUT-Y-VARIABLE < W-Y-POS(U-COUNTER)
+                       SET S-UP TO TRUE
+                       SET IS-VALID TO TRUE
+                   ELSE
+                       DISPLAY "INVALID MOVE"
+                       SET NOT-VALID TO TRUE
+                       PERFORM GA-ACCEPT-W-CORD
+
+                   END-IF
+
+               WHEN OTHER
+                   DISPLAY "INVALID MOVE"
+                   SET NOT-VALID TO TRUE
+                   PERFORM GA-ACCEPT-W-CORD
+
+               END-EVALUATE
+
+      **************************EVALUATE BLACK**************************
+
+           WHEN PLAYER-TURN = 'B'
+               EVALUATE TRUE
+
+               WHEN
+               B-FIRST(U-COUNTER) = 'Y' AND
+               (INPUT-Y-VARIABLE - B-Y-POS(U-COUNTER) > 2)
+
+                   DISPLAY "INVALID MOVE, A PAWN CAN ONLY MOVE 2 "
+                   "ON FIRST MOVE"
+                   SET NOT-VALID TO TRUE
+                   PERFORM GB-ACCEPT-B-CORD
+
+               WHEN
+               B-FIRST(U-COUNTER) = 'N' AND
+               (INPUT-Y-VARIABLE - B-Y-POS(U-COUNTER) > 1)
+
+                   DISPLAY "INVALID MOVE, A PAWN CAN ONLY MOVE 1 "
+                   "AFTER FIRST MOVE"
+                   SET NOT-VALID TO TRUE
+                   PERFORM GA-ACCEPT-W-CORD
+
+               WHEN
+               (B-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N) =
+               (INPUT-Y-VARIABLE - B-Y-POS(U-COUNTER))
+               AND
+               (INPUT-Y-VARIABLE - B-Y-POS(U-COUNTER) = 1)
+               AND
+               (B-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N  = 1)
+               AND TYPE-MOVE = 'NMO'
+
+                       SET D-L-D TO TRUE
+                       SET IS-VALID TO TRUE
+
+               WHEN
+               (INPUT-X-VARIABLE-N - B-X-VAR(U-COUNTER) ) =
+               (INPUT-Y-VARIABLE - B-Y-POS(U-COUNTER))
+               AND
+               (INPUT-Y-VARIABLE- B-Y-POS(U-COUNTER)  = 1 )
+               AND
+               (INPUT-X-VARIABLE-N - B-X-VAR(U-COUNTER) = 1)
+               AND TYPE-MOVE = 'NMO'
+
+                   SET D-R-D TO TRUE
+                   SET IS-VALID TO TRUE
+
+
+               WHEN
+               (INPUT-X-VARIABLE-N = B-X-VAR(U-COUNTER) AND
+               INPUT-Y-VARIABLE IS NOT = B-Y-POS(U-COUNTER))
+               AND TYPE-MOVE = 'NMO'
+
+                   IF INPUT-Y-VARIABLE > B-Y-POS(U-COUNTER)
+                       SET S-DN TO TRUE
+                       SET IS-VALID TO TRUE
+                   ELSE
+                       DISPLAY "INVALID MOVE"
+                       SET NOT-VALID TO TRUE
+                       PERFORM GB-ACCEPT-B-CORD
+
+                   END-IF
+
+               WHEN OTHER
+                   DISPLAY "INVALID MOVE"
+                   SET NOT-VALID TO TRUE
+                   PERFORM GB-ACCEPT-B-CORD
+
+               END-EVALUATE
+
+
+           END-EVALUATE
+
+           IF VALID-MOVE = 'Y' AND TYPE-MOVE NOT = 'NMO'
+                   PERFORM IBA-CHECK-POS
+               END-IF
+
+
+           .
+
+           IBA-CHECK-POS SECTION.
+
+      *******************************************************************
+      *                       IBA-CHECK-POS SECTION                     *
+      *******************************************************************
+
+      *     DISPLAY "PERFORMING IBA-CHECK-POS"
+
+      *     DISPLAY "TYPE OF MOVE " TYPE-MOVE
+
+           MOVE 1 TO V-COUNTER
+           MOVE 1 TO W-COUNTER
+
+           EVALUATE TRUE
+           WHEN PLAYER-TURN = 'W'
+           PERFORM IBAA-CHECK-WHITE
+
+           WHEN PLAYER-TURN = 'B'
+           PERFORM IBAB-CHECK-BLACK
+
+           END-EVALUATE
+
+           .
+
+           IBAA-CHECK-WHITE SECTION.
+
+      *******************************************************************
+      *                    IBAA-CHECK-WHITE SECTION                     *
+      *******************************************************************
+
+      **************************EVALUATE WHITE***************************
+
+      *     DISPLAY "CHECKING WHITE"
+           PERFORM UNTIL INPUT-X-VARIABLE-N = W-X-VAR(V-COUNTER)
+               AND INPUT-Y-VARIABLE = W-Y-POS(V-COUNTER)
+               OR V-COUNTER >= 16
+               ADD 1 TO V-COUNTER
+           END-PERFORM
+
+           PERFORM UNTIL INPUT-X-VARIABLE-N = B-X-VAR(W-COUNTER)
+               AND INPUT-Y-VARIABLE = B-Y-POS(W-COUNTER)
+               OR W-COUNTER >= 16
+               ADD 1 TO W-COUNTER
+           END-PERFORM
+
+           MOVE INPUT-X-VARIABLE-N TO X-COUNTER
+           MOVE INPUT-Y-VARIABLE TO Y-COUNTER
+
+           EVALUATE TRUE
+
+           WHEN TYPE-MOVE ='DRU'
+
+      *         DISPLAY TYPE-MOVE " DRU"
+
+                   IF W-PIECE(U-COUNTER) = 'WP'
+                       IF INPUT-Y-VARIABLE NOT = B-Y-POS(W-COUNTER)
+                         AND INPUT-X-VARIABLE-N NOT = B-X-VAR(W-COUNTER)
+
+                           DISPLAY "INVALID PAWN MOVE"
+                           PERFORM GA-ACCEPT-W-CORD
+
+                       END-IF
+                   END-IF
+
+               PERFORM UNTIL X-COUNTER >= W-X-VAR(U-COUNTER)
+                   AND Y-COUNTER >= W-Y-POS(U-COUNTER) OR
+                   X-COUNTER = 0
+                   MOVE 1 TO Z-COUNTER
+
+                   PERFORM UNTIL Z-COUNTER > 16
+
+                       IF W-X-VAR(Z-COUNTER) = X-COUNTER
+                           AND W-Y-POS(Z-COUNTER) = Y-COUNTER
+
+                           DISPLAY "INCORRECT MOVE, WHITE PIECE "
+                           "DIAGONALLY UP TO THE RIGHT"
+                           PERFORM GA-ACCEPT-W-CORD
+                       END-IF
+
+                       PERFORM IBAC-CHECK-INFRONT
+
+                   ADD 1 TO Z-COUNTER
+
+
+                   END-PERFORM
+
+                   ADD 1 TO Y-COUNTER
+                   SUBTRACT 1 FROM X-COUNTER
+
+               END-PERFORM
+
+           WHEN TYPE-MOVE ='DLU'
+      *         DISPLAY TYPE-MOVE " DLU"
+
+                   IF W-PIECE(U-COUNTER) = 'WP'
+                       IF INPUT-Y-VARIABLE NOT = B-Y-POS(W-COUNTER)
+                         AND INPUT-X-VARIABLE-N NOT = B-X-VAR(W-COUNTER)
+
+                           DISPLAY "INVALID PAWN MOVE"
+                           PERFORM GA-ACCEPT-W-CORD
+                       END-IF
+                   END-IF
+
+               PERFORM UNTIL X-COUNTER >= W-X-VAR(U-COUNTER)
+                       AND Y-COUNTER >= W-Y-POS(U-COUNTER) OR
+                       X-COUNTER = 0
+
+                   MOVE 1 TO Z-COUNTER
+
+                   PERFORM UNTIL Z-COUNTER > 16
+
+                       IF W-X-VAR(Z-COUNTER) = X-COUNTER
+                           AND W-Y-POS(Z-COUNTER) = Y-COUNTER
+                           DISPLAY "INCORRECT MOVE, WHITE PIECE "
+                           "DIAGONALLY UP TO THE LEFT"
+                           PERFORM GA-ACCEPT-W-CORD
+
+                       END-IF
+
+                       PERFORM IBAC-CHECK-INFRONT
+
+                       ADD 1 TO Z-COUNTER
+
+                   END-PERFORM
+
+                   ADD 1 TO Y-COUNTER
+                   ADD 1 TO X-COUNTER
+
+               END-PERFORM
+
+           WHEN TYPE-MOVE = 'DLD'
+
+      *         DISPLAY TYPE-MOVE " DLD"
+
+                   PERFORM UNTIL X-COUNTER >= W-X-VAR(U-COUNTER)
+                       AND Y-COUNTER >= W-Y-POS(U-COUNTER) OR
+                       X-COUNTER = 0
+
+                   MOVE 1 TO Z-COUNTER
+
+                   PERFORM UNTIL Z-COUNTER > 16
+
+                       IF W-X-VAR(Z-COUNTER) = X-COUNTER
+                           AND W-Y-POS(Z-COUNTER) = Y-COUNTER
+                           DISPLAY "INCORRECT MOVE, WHITE PIECE "
+                           "DIAGONALLY DOWN TO THE LEFT"
+                           PERFORM GA-ACCEPT-W-CORD
+                       END-IF
+
+                       PERFORM IBAC-CHECK-INFRONT
+
+                       ADD 1 TO Z-COUNTER
+
+                   END-PERFORM
+
+                   SUBTRACT 1 FROM Y-COUNTER
+                   SUBTRACT 1 FROM X-COUNTER
+
+               END-PERFORM
+
+           WHEN TYPE-MOVE = 'DRD'
+      *         DISPLAY TYPE-MOVE " DRD"
+
+               PERFORM UNTIL X-COUNTER >= W-X-VAR(U-COUNTER)
+                       AND Y-COUNTER <= W-Y-POS(U-COUNTER) OR
+                       X-COUNTER = 0
+
+                   MOVE 1 TO Z-COUNTER
+
+                   PERFORM UNTIL Z-COUNTER > 16
+
+                       IF W-X-VAR(Z-COUNTER) = X-COUNTER
+                           AND W-Y-POS(Z-COUNTER) = Y-COUNTER
+                           DISPLAY "INCORRECT MOVE, WHITE PIECE "
+                           "DIAGONALLY DOWN TO THE RIGHT"
+                           PERFORM GA-ACCEPT-W-CORD
+                       END-IF
+
+                       PERFORM IBAC-CHECK-INFRONT
+
+                       ADD 1 TO Z-COUNTER
+
+                       END-PERFORM
+
+                   SUBTRACT 1 FROM Y-COUNTER
+                   ADD 1 TO X-COUNTER
+
+               END-PERFORM
+
+           WHEN TYPE-MOVE = 'SUP'
+      *         DISPLAY TYPE-MOVE " SUP"
+
+               IF W-PIECE(U-COUNTER) = 'WP'
+                   IF INPUT-Y-VARIABLE = B-Y-POS(W-COUNTER)
+                     AND INPUT-X-VARIABLE-N = B-X-VAR(W-COUNTER)
+
+                       DISPLAY "INVALID PAWN MOVE"
+                       PERFORM GA-ACCEPT-W-CORD
+
+                   END-IF
+
+               PERFORM UNTIL X-COUNTER = W-X-VAR(U-COUNTER)
+                       AND Y-COUNTER = W-Y-POS(U-COUNTER) OR
+                       Y-COUNTER > 8
+
+                   MOVE 1 TO Z-COUNTER
+
+                   PERFORM UNTIL Z-COUNTER > 16
+
+                       IF W-X-VAR(Z-COUNTER) = X-COUNTER
+                           AND W-Y-POS(Z-COUNTER) = Y-COUNTER
+                           DISPLAY "INCORRECT MOVE, WHITE PIECE "
+                           "ABOVE"
+      *                     DISPLAY W-PIECE(Z-COUNTER)
+      *                     DISPLAY "Z-COUNTER " Z-COUNTER
+      *                     DISPLAY "Y " W-Y-POS(Z-COUNTER)
+      *                     " " Y-COUNTER
+      *                     DISPLAY "X " W-X-VAR(Z-COUNTER)
+      *                     " " Z-COUNTER
+                           PERFORM GA-ACCEPT-W-CORD
+                       END-IF
+
+                       PERFORM IBAC-CHECK-INFRONT
+
+                       ADD 1 TO Z-COUNTER
+
+                   END-PERFORM
+
+                   ADD 1 TO Y-COUNTER
+
+               END-PERFORM
+
+           WHEN TYPE-MOVE = 'SDN'
+      *         DISPLAY TYPE-MOVE " SDN"
+               PERFORM UNTIL X-COUNTER = W-X-VAR(U-COUNTER)
+                       AND Y-COUNTER = W-Y-POS(U-COUNTER) OR
+                       Y-COUNTER = 0
+
+                   MOVE 1 TO Z-COUNTER
+
+                   PERFORM UNTIL Z-COUNTER > 16
+
+                       IF W-X-VAR(Z-COUNTER) = X-COUNTER
+                           AND W-Y-POS(Z-COUNTER) = Y-COUNTER
+                           DISPLAY "INCORRECT MOVE, WHITE PIECE "
+                           "BENEATH"
+                           PERFORM GA-ACCEPT-W-CORD
+                       END-IF
+
+                       PERFORM IBAC-CHECK-INFRONT
+
+                       ADD 1 TO Z-COUNTER
+
+                   END-PERFORM
+
+                   SUBTRACT 1 FROM Y-COUNTER
+
+               END-PERFORM
+
+           WHEN TYPE-MOVE ='SRI'
+      *         DISPLAY TYPE-MOVE " SRI"
+               PERFORM UNTIL X-COUNTER = W-X-VAR(U-COUNTER)
+                       AND Y-COUNTER = W-Y-POS(U-COUNTER) OR
+                       X-COUNTER = 0
+
+                   MOVE 1 TO Z-COUNTER
+
+                   PERFORM UNTIL Z-COUNTER > 16
+
+                       IF W-X-VAR(Z-COUNTER) = X-COUNTER
+                           AND W-Y-POS(Z-COUNTER) = Y-COUNTER
+                           DISPLAY "INCORRECT MOVE, WHITE PIECE "
+                           "TO THE RIGHT"
+                           PERFORM GA-ACCEPT-W-CORD
+                       END-IF
+
+                       PERFORM IBAC-CHECK-INFRONT
+
+                       ADD 1 TO Z-COUNTER
+
+                   END-PERFORM
+
+                   SUBTRACT 1 FROM X-COUNTER
+
+               END-PERFORM
+
+           WHEN TYPE-MOVE = 'SLE'
+      *         DISPLAY TYPE-MOVE " SLE"
+               PERFORM UNTIL X-COUNTER = W-X-VAR(U-COUNTER)
+                       AND Y-COUNTER = W-Y-POS(U-COUNTER) OR
+                       X-COUNTER > 8
+
+                   MOVE 1 TO Z-COUNTER
+
+                   PERFORM UNTIL Z-COUNTER > 16
+
+                       IF W-X-VAR(Z-COUNTER) = X-COUNTER
+                           AND W-Y-POS(Z-COUNTER) = Y-COUNTER
+                           DISPLAY "INCORRECT MOVE, WHITE PIECE "
+                           "TO THE LEFT"
+                           PERFORM GA-ACCEPT-W-CORD
+                       END-IF
+
+                       PERFORM IBAC-CHECK-INFRONT
+
+                       ADD 1 TO Z-COUNTER
+
+                   END-PERFORM
+
+                   ADD 1 TO X-COUNTER
+
+               END-PERFORM
+               WHEN OTHER
+                   CONTINUE
+
+               END-EVALUATE
+
+               IF INPUT-Y-VARIABLE = W-Y-POS(V-COUNTER)
+                   AND INPUT-X-VARIABLE-N = W-X-VAR(V-COUNTER)
+                   AND TYPE-MOVE NOT = 'NMO'
+                   DISPLAY "INVALID MOVE: WHITE PIECE HERE"
+                   SET NOT-VALID TO TRUE
+                   PERFORM GA-ACCEPT-W-CORD
+
+               ELSE IF INPUT-Y-VARIABLE = B-Y-POS(W-COUNTER)
+                   AND INPUT-X-VARIABLE-N = B-X-VAR(W-COUNTER)
+                   AND TYPE-MOVE NOT = 'NMO'
+      *             DISPLAY "BLACK HIT"
+                   MOVE '--' TO B-PIECE(W-COUNTER)
+                   MOVE 0 TO B-X-POS(W-COUNTER)
+                   MOVE 0 TO B-Y-POS(W-COUNTER)
+                   PERFORM IBB-MOVE-POS
+               ELSE
+      *             DISPLAY "VALID MOVE: NOBODOY HERE"
+                   SET IS-VALID TO TRUE
+      *             DISPLAY "MOVING POS"
+                   PERFORM IBB-MOVE-POS
+               END-IF
+
+           .
+
+           IBAB-CHECK-BLACK SECTION.
+
+      *******************************************************************
+      *                    IBAB-CHECK-BLACK SECTION                     *
+      *******************************************************************
+
+      **************************EVALUATE BLACK***************************
+
+           DISPLAY "CHECKING BLACK"
+           PERFORM UNTIL INPUT-X-VARIABLE-N = B-X-VAR(V-COUNTER)
+                         AND INPUT-Y-VARIABLE = B-Y-POS(V-COUNTER)
+                         OR V-COUNTER >= 16
+               ADD 1 TO V-COUNTER
+           END-PERFORM
+
+           PERFORM UNTIL INPUT-X-VARIABLE-N = W-X-VAR(W-COUNTER)
+                         AND INPUT-Y-VARIABLE = W-Y-POS(W-COUNTER)
+                         OR W-COUNTER >= 16
+               ADD 1 TO W-COUNTER
+           END-PERFORM
+
+           MOVE INPUT-X-VARIABLE-N TO X-COUNTER
+           MOVE INPUT-Y-VARIABLE TO Y-COUNTER
+
+           EVALUATE TRUE
+           WHEN TYPE-MOVE = 'DRU'
+      *         DISPLAY TYPE-MOVE " DRU"
+               PERFORM UNTIL X-COUNTER >= B-X-VAR(U-COUNTER)
+                             AND Y-COUNTER >= B-Y-POS(U-COUNTER) OR
+                             X-COUNTER = 0
+                   MOVE 1 TO Z-COUNTER
+
+                   PERFORM UNTIL Z-COUNTER > 16
+
+                       IF B-X-VAR(Z-COUNTER) = X-COUNTER
+                          AND B-Y-POS(Z-COUNTER) = Y-COUNTER
+                           DISPLAY "INCORRECT MOVE, BLACK PIECE "
+                                   "DIAGONALLY UP TO THE RIGHT"
+                           PERFORM GB-ACCEPT-B-CORD
+                       END-IF
+
+                       PERFORM IBAC-CHECK-INFRONT
+
+                       ADD 1 TO Z-COUNTER
+
+
+                   END-PERFORM
+
+                   ADD 1 TO Y-COUNTER
+                   SUBTRACT 1 FROM X-COUNTER
+
+               END-PERFORM
+
+           WHEN TYPE-MOVE = 'DLU'
+      *         DISPLAY TYPE-MOVE " DLU"
+               PERFORM UNTIL X-COUNTER >= B-X-VAR(U-COUNTER)
+                             AND Y-COUNTER >= B-Y-POS(U-COUNTER) OR
+                             X-COUNTER = 0
+
+                   MOVE 1 TO Z-COUNTER
+
+                   PERFORM UNTIL Z-COUNTER > 16
+
+                       IF B-X-VAR(Z-COUNTER) = X-COUNTER
+                          AND B-Y-POS(Z-COUNTER) = Y-COUNTER
+                           DISPLAY "INCORRECT MOVE, BLACK PIECE "
+                                   "DIAGONALLY UP TO THE LEFT"
+                           PERFORM GB-ACCEPT-B-CORD
+
+                       END-IF
+
+                       PERFORM IBAC-CHECK-INFRONT
+
+                       ADD 1 TO Z-COUNTER
+
+                   END-PERFORM
+
+                   ADD 1 TO Y-COUNTER
+                   ADD 1 TO X-COUNTER
+
+               END-PERFORM
+
+           WHEN TYPE-MOVE = 'DLD'
+      *         DISPLAY TYPE-MOVE " DLD"
+
+                   IF B-PIECE(U-COUNTER) = 'BP'
+                       IF INPUT-Y-VARIABLE NOT = W-Y-POS(W-COUNTER)
+                         AND INPUT-X-VARIABLE-N NOT = W-X-VAR(W-COUNTER)
+
+                           DISPLAY "INVALID PAWN MOVE"
+                           PERFORM GA-ACCEPT-W-CORD
+                       END-IF
+                   END-IF
+
+                   PERFORM UNTIL X-COUNTER >= B-X-VAR(U-COUNTER)
+                       AND Y-COUNTER >= B-Y-POS(U-COUNTER) OR
+                       X-COUNTER = 0
+
+                       MOVE 1 TO Z-COUNTER
+
+                       PERFORM UNTIL Z-COUNTER > 16
+
+                           IF B-X-VAR(Z-COUNTER) = X-COUNTER
+                               AND B-Y-POS(Z-COUNTER) = Y-COUNTER
+                               DISPLAY "INCORRECT MOVE, BLACK PIECE "
+                               "DIAGONALLY DOWN TO THE LEFT"
+                               PERFORM GB-ACCEPT-B-CORD
+                           END-IF
+
+                           PERFORM IBAC-CHECK-INFRONT
+
+                           ADD 1 TO Z-COUNTER
+
+                       END-PERFORM
+
+                       SUBTRACT 1 FROM Y-COUNTER
+                       ADD 1 TO X-COUNTER
+
+                   END-PERFORM
+
+           WHEN TYPE-MOVE = 'DRD'
+      *         DISPLAY TYPE-MOVE " DRD"
+
+               IF B-PIECE(U-COUNTER) = 'BP'
+                   IF INPUT-Y-VARIABLE NOT = W-Y-POS(W-COUNTER)
+                     AND INPUT-X-VARIABLE-N NOT = W-X-VAR(W-COUNTER)
+
+                       DISPLAY "INVALID PAWN MOVE"
+                       PERFORM GA-ACCEPT-W-CORD
+                   END-IF
+               END-IF
+
+               PERFORM UNTIL X-COUNTER >= B-X-VAR(U-COUNTER)
+                       AND Y-COUNTER <= B-Y-POS(U-COUNTER) OR
+                       X-COUNTER = 0
+
+                   MOVE 1 TO Z-COUNTER
+
+                   PERFORM UNTIL Z-COUNTER > 16
+
+                       IF B-X-VAR(Z-COUNTER) = X-COUNTER
+                           AND B-Y-POS(Z-COUNTER) = Y-COUNTER
+                           DISPLAY "INCORRECT MOVE, BLACK PIECE "
+                           "DIAGONALLY DOWN TO THE RIGHT"
+                           PERFORM GB-ACCEPT-B-CORD
+                       END-IF
+
+                       PERFORM IBAC-CHECK-INFRONT
+
+                       ADD 1 TO Z-COUNTER
+
+                   END-PERFORM
+
+                   SUBTRACT 1 FROM Y-COUNTER
+                   SUBTRACT 1 FROM X-COUNTER
+
+               END-PERFORM
+
+           WHEN TYPE-MOVE = 'SUP'
+      *         DISPLAY TYPE-MOVE " SUP"
+               PERFORM UNTIL X-COUNTER = B-X-VAR(U-COUNTER)
+                       AND Y-COUNTER = B-Y-POS(U-COUNTER) OR
+                       Y-COUNTER > 8
+
+                   MOVE 1 TO Z-COUNTER
+
+                   PERFORM UNTIL Z-COUNTER > 16
+
+                       IF B-X-VAR(Z-COUNTER) = X-COUNTER
+                           AND B-Y-POS(Z-COUNTER) = Y-COUNTER
+                           DISPLAY "INCORRECT MOVE, BLACK PIECE "
+                           "ABOVE"
+                           PERFORM GB-ACCEPT-B-CORD
+                       END-IF
+
+                       PERFORM IBAC-CHECK-INFRONT
+
+                       ADD 1 TO Z-COUNTER
+
+                   END-PERFORM
+
+                   ADD 1 TO Y-COUNTER
+
+               END-PERFORM
+
+           WHEN TYPE-MOVE = 'SDN'
+      *         DISPLAY TYPE-MOVE " SDN"
+
+               IF B-PIECE(U-COUNTER) = 'BP'
+                   IF INPUT-Y-VARIABLE = W-Y-POS(W-COUNTER)
+                     AND INPUT-X-VARIABLE-N = W-X-VAR(W-COUNTER)
+
+                       DISPLAY "INVALID PAWN MOVE"
+                       PERFORM GA-ACCEPT-W-CORD
+
+                   END-IF
+               END-IF
+
+
+               PERFORM UNTIL X-COUNTER = B-X-VAR(U-COUNTER)
+                       AND Y-COUNTER = B-Y-POS(U-COUNTER) OR
+                       Y-COUNTER = 0
+
+                   MOVE 1 TO Z-COUNTER
+
+                   PERFORM UNTIL Z-COUNTER > 16
+
+                       IF B-X-VAR(Z-COUNTER) = X-COUNTER
+                           AND B-Y-POS(Z-COUNTER) = Y-COUNTER
+                           DISPLAY "INCORRECT MOVE, BLACK PIECE "
+                           "BENEATH"
+                           PERFORM GB-ACCEPT-B-CORD
+                       END-IF
+
+                       PERFORM IBAC-CHECK-INFRONT
+
+                       ADD 1 TO Z-COUNTER
+
+                   END-PERFORM
+
+                   SUBTRACT 1 FROM Y-COUNTER
+
+               END-PERFORM
+
+           WHEN TYPE-MOVE = 'SRI'
+      *         DISPLAY TYPE-MOVE " SRI"
+               PERFORM UNTIL X-COUNTER = B-X-VAR(U-COUNTER)
+                       AND Y-COUNTER = B-Y-POS(U-COUNTER) OR
+                       X-COUNTER = 0
+
+                   MOVE 1 TO Z-COUNTER
+
+                   PERFORM UNTIL Z-COUNTER > 16
+
+                       IF B-X-VAR(Z-COUNTER) = X-COUNTER
+                           AND B-Y-POS(Z-COUNTER) = Y-COUNTER
+                           DISPLAY "INCORRECT MOVE, BLACK PIECE "
+                           "TO THE RIGHT"
+                           PERFORM GB-ACCEPT-B-CORD
+                       END-IF
+
+                       PERFORM IBAC-CHECK-INFRONT
+
+                       ADD 1 TO Z-COUNTER
+
+                   END-PERFORM
+
+                   SUBTRACT 1 FROM X-COUNTER
+
+               END-PERFORM
+
+           WHEN TYPE-MOVE = 'SLE'
+      *         DISPLAY TYPE-MOVE " SLE"
+               PERFORM UNTIL X-COUNTER = B-X-VAR(U-COUNTER)
+                       AND Y-COUNTER = B-Y-POS(U-COUNTER) OR
+                       X-COUNTER > 8
+
+                   MOVE 1 TO Z-COUNTER
+
+                   PERFORM UNTIL Z-COUNTER > 16
+
+                       IF B-X-VAR(Z-COUNTER) = X-COUNTER
+                           AND B-Y-POS(Z-COUNTER) = Y-COUNTER
+                           DISPLAY "INCORRECT MOVE, BLACK PIECE "
+                           "TO THE LEFT"
+                           PERFORM GB-ACCEPT-B-CORD
+                       END-IF
+
+                       PERFORM IBAC-CHECK-INFRONT
+
+                       ADD 1 TO Z-COUNTER
+
+                   END-PERFORM
+
+                   ADD 1 TO X-COUNTER
+
+               END-PERFORM
+            WHEN OTHER
+               CONTINUE
+
+           END-EVALUATE
+           IF INPUT-Y-VARIABLE = B-Y-POS(V-COUNTER)
+               AND INPUT-X-VARIABLE-N = B-X-VAR(V-COUNTER)
+               AND TYPE-MOVE NOT = 'NMO'
+               DISPLAY "INVALID MOVE: BLACK PIECE HERE"
+               SET NOT-VALID TO TRUE
+               PERFORM GB-ACCEPT-B-CORD
+
+           ELSE IF INPUT-Y-VARIABLE = W-Y-POS(W-COUNTER)
+               AND INPUT-X-VARIABLE-N = W-X-VAR(W-COUNTER)
+               AND TYPE-MOVE NOT = 'NMO'
+      *         DISPLAY "WHITE HIT"
+               MOVE '--' TO W-PIECE(W-COUNTER)
+               MOVE 0 TO W-X-POS(W-COUNTER)
+               MOVE 0 TO W-Y-POS(W-COUNTER)
+               PERFORM IBB-MOVE-POS
+           ELSE
+      *         DISPLAY "VALID MOVE: NOBODOY HERE"
+               SET IS-VALID TO TRUE
+               PERFORM IBB-MOVE-POS
+           END-IF
+
+           .
+
+           IBAC-CHECK-INFRONT SECTION.
+
+      *******************************************************************
+      *                  IBAC-CHECK-INFRONT SECTION                     *
+      *******************************************************************
+
+      *     DISPLAY "PERFORMING IBAC-CHECK-INFRONT " Z-COUNTER
+
+           EVALUATE PLAYER-TURN
+           WHEN 'W'
+      *     DISPLAY "X " B-X-VAR(Z-COUNTER) " " X-COUNTER
+      *     DISPLAY "Y " B-Y-POS(Z-COUNTER) " " Y-COUNTER
+      *     DISPLAY "X COUNT " X-COUNTER " " INPUT-X-VARIABLE-N
+      *     DISPLAY "Y COUNT " Y-COUNTER " " INPUT-Y-VARIABLE
+      *     DISPLAY "Z-COUNTER " Z-COUNTER
+
+               IF B-X-VAR(Z-COUNTER) = X-COUNTER
+               AND B-Y-POS(Z-COUNTER) = Y-COUNTER
+               AND (X-COUNTER NOT = INPUT-X-VARIABLE-N
+               OR Y-COUNTER NOT = INPUT-Y-VARIABLE)
+
+                   DISPLAY "BLACK PIECE IN FRONT OF THE "
+                       "WANTED POSITION"
+                   PERFORM GA-ACCEPT-W-CORD
+               END-IF
+
+           WHEN 'B'
+               IF W-X-VAR(Z-COUNTER) = X-COUNTER
+                  AND W-Y-POS(Z-COUNTER) = Y-COUNTER
+                  AND X-COUNTER NOT = INPUT-X-VARIABLE-N
+                  AND Y-COUNTER NOT = INPUT-Y-VARIABLE
+
+                   DISPLAY "WHITE PIECE IN FRONT OF THE "
+                           "WANTED POSITION"
+                   PERFORM GB-ACCEPT-B-CORD
+               END-IF
+           END-EVALUATE
+           .
+
+           IBB-MOVE-POS SECTION.
+
+      *******************************************************************
+      *                        IBB-MOVE-POS SECTION                     *
+      *******************************************************************
+
+      *     DISPLAY "PERFORMING IBB-MOVE-POS"
+
+           SET N-MO TO TRUE
+
+
+           EVALUATE TRUE
+           WHEN PLAYER-TURN = 'W'
+
+               MOVE "--" TO
+                   BRD-ROWS(W-Y-POS(U-COUNTER))(W-X-POS(U-COUNTER):2)
+               MOVE INPUT-Y-VARIABLE TO W-Y-POS(U-COUNTER)
+               MOVE INPUT-X-VARIABLE-N TO W-X-VAR(U-COUNTER)
+               MOVE 'N' TO W-FIRST(U-COUNTER)
+
+           WHEN PLAYER-TURN = 'B'
+
+               MOVE "--" TO
+                   BRD-ROWS(B-Y-POS(U-COUNTER))(B-X-POS(U-COUNTER):2)
+               MOVE INPUT-Y-VARIABLE TO B-Y-POS(U-COUNTER)
+               MOVE INPUT-X-VARIABLE-N TO B-X-VAR(U-COUNTER)
+               MOVE 'N' TO B-FIRST(U-COUNTER)
+
+           END-EVALUATE
+
+
+
+           .
