@@ -1639,6 +1639,7 @@
                        PERFORM GA-ACCEPT-W-CORD
 
                    END-IF
+               END-IF
 
                PERFORM UNTIL X-COUNTER = W-X-VAR(U-COUNTER)
                        AND Y-COUNTER = W-Y-POS(U-COUNTER) OR
@@ -2092,8 +2093,8 @@
 
       *     DISPLAY "PERFORMING IBAC-CHECK-INFRONT " Z-COUNTER
 
-           EVALUATE PLAYER-TURN
-           WHEN 'W'
+      *     EVALUATE PLAYER-TURN
+      *     WHEN 'W'
       *     DISPLAY "X " B-X-VAR(Z-COUNTER) " " X-COUNTER
       *     DISPLAY "Y " B-Y-POS(Z-COUNTER) " " Y-COUNTER
       *     DISPLAY "X COUNT " X-COUNTER " " INPUT-X-VARIABLE-N
@@ -2110,7 +2111,7 @@
                    PERFORM GA-ACCEPT-W-CORD
                END-IF
 
-           WHEN 'B'
+      *     WHEN 'B'
                IF W-X-VAR(Z-COUNTER) = X-COUNTER
                   AND W-Y-POS(Z-COUNTER) = Y-COUNTER
                   AND X-COUNTER NOT = INPUT-X-VARIABLE-N
@@ -2120,7 +2121,8 @@
                            "WANTED POSITION"
                    PERFORM GB-ACCEPT-B-CORD
                END-IF
-           END-EVALUATE
+
+      *     END-EVALUATE
            .
 
            IBB-MOVE-POS SECTION.
