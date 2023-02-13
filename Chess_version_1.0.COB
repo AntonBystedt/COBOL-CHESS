@@ -232,6 +232,8 @@
 
            .
 
+           D-CHECK-KING SECTION.
+
       *******************************************************************
       *                        D-CHECK-KING SECTION                     *
       *******************************************************************
@@ -303,9 +305,6 @@
                DISPLAY BRD-WIDTH
                DISPLAY " "
            .
-
-           D-CHECK-KING SECTION.
-
 
 
            GA-ACCEPT-W-CORD SECTION.
