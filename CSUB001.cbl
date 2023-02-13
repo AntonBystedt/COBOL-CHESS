@@ -24,10 +24,8 @@
       *-----------------------
        LINKAGE SECTION.
            COPY COORDINATES.
-      *     COPY B-COORDINATES.
       *-----------------------
        PROCEDURE DIVISION USING COORDINATES,
-      *                         B-COORDINATES
            .
       *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
        MAIN-PROCEDURE.

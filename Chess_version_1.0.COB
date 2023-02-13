@@ -112,13 +112,11 @@
            PERFORM UNTIL WINNER-SWITCH IS NOT = 'N'
 
                PERFORM CC-MOVE
-      *         PERFORM DA-NEW-BOARD
                PERFORM F-CHECK-KING
                SET B-TURN TO TRUE
                PERFORM GB-ACCEPT-B-CORD
 
                PERFORM CC-MOVE
-      *         PERFORM DA-NEW-BOARD
                PERFORM F-CHECK-KING
                SET W-TURN TO TRUE
                PERFORM GA-ACCEPT-W-CORD
