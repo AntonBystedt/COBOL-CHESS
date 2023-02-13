@@ -28,7 +28,6 @@
 
            01 WS-COUNTERS.
                05 WS-COUNTER   PIC 9.
-               05 WS-COUNTER2  PIC 9.
                05 T-COUNTER    PIC 99.
                05 U-COUNTER    PIC 99.
                05 V-COUNTER    PIC 99.
