@@ -23,11 +23,11 @@
            01 CJ-COUNTER PIC 99.
       *-----------------------
        LINKAGE SECTION.
-           COPY W-COORDINATES.
-           COPY B-COORDINATES.
+           COPY COORDINATES.
+      *     COPY B-COORDINATES.
       *-----------------------
-       PROCEDURE DIVISION USING W-COORDINATES,
-                                B-COORDINATES
+       PROCEDURE DIVISION USING COORDINATES,
+      *                         B-COORDINATES
            .
       *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
        MAIN-PROCEDURE.

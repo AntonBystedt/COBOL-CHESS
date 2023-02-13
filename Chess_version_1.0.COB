@@ -74,8 +74,7 @@
                88 H-R-D        VALUE 'HRD'.
                88 H-L-D        VALUE 'HLD'.
 
-           COPY W-COORDINATES.
-           COPY B-COORDINATES.
+           COPY COORDINATES.
 
       *-----------------------
        PROCEDURE DIVISION.
@@ -95,8 +94,7 @@
                SET NO-WINNER TO TRUE
                SET W-TURN TO TRUE
                SET N-MO TO TRUE
-               CALL 'CSUB001' USING W-COORDINATES,
-                                      B-COORDINATES
+               CALL 'CSUB001' USING COORDINATES
            .
 
 
