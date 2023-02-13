@@ -106,18 +106,18 @@
       *******************************************************************
 
            PERFORM C-DISP-BOARD
-           PERFORM F-CHECK-KING
+           PERFORM D-CHECK-KING
            PERFORM GA-ACCEPT-W-CORD
 
            PERFORM UNTIL WINNER-SWITCH IS NOT = 'N'
 
                PERFORM CC-MOVE
-               PERFORM F-CHECK-KING
+               PERFORM D-CHECK-KING
                SET B-TURN TO TRUE
                PERFORM GB-ACCEPT-B-CORD
 
                PERFORM CC-MOVE
-               PERFORM F-CHECK-KING
+               PERFORM D-CHECK-KING
                SET W-TURN TO TRUE
                PERFORM GA-ACCEPT-W-CORD
 
@@ -232,10 +232,58 @@
 
            .
 
-           DA-NEW-BOARD SECTION.
+      *******************************************************************
+      *                        D-CHECK-KING SECTION                     *
+      *******************************************************************
+
+
+           IF  B-PIECE(1) IS NOT = 'BK'
+               AND PLAYER-TURN = 'W'
+               SET W-WINNER TO TRUE
+               PERFORM FA-NEW-BOARD
+           DISPLAY " __      __  __  __  ______  ______  ____        __"
+           "  __  ______   ____    ______  _____   ____    __    __"
+           DISPLAY "/\ \  __/\ \/\ \/\ \/\__  _\/\__  _\/\  _`\     /\ "
+           "\/\ \/\__  _\ /\  _`\ /\__  _\/\  __`\/\  _`\ /\ \  /\ \"
+           DISPLAY "\ \ \/\ \ \ \ \ \_\ \/_/\ \/\/_/\ \/\ \ \L\_\   \ \"
+           " \ \ \/_/\ \/ \ \ \/\_\/_/\ \/\ \ \/\ \ \ \L\ \ `\`\\/'/"
+           DISPLAY " \ \ \ \ \ \ \ \  _  \ \ \ \   \ \ \ \ \  _\L    \ "
+           "\ \ \ \ \ \ \  \ \ \/_/_ \ \ \ \ \ \ \ \ \ ,  /`\ `\ /'"
+           DISPLAY "  \ \ \_/ \_\ \ \ \ \ \ \_\ \__ \ \ \ \ \ \L\ \   \"
+           " \ \_/ \ \_\ \__\ \ \L\ \ \ \ \ \ \ \_\ \ \ \\ \ `\ \ \"
+           DISPLAY "   \ `\___x___/\ \_\ \_\/\_____\ \ \_\ \ \____/    "
+           "\ `\___/ /\_____\\ \____/  \ \_\ \ \_____\ \_\ \_\ \ \_\"
+           DISPLAY "    '\/__//__/  \/_/\/_/\/_____/  \/_/  \/___/     "
+           " `\/__/  \/_____/ \/___/    \/_/  \/_____/\/_/\/ /  \/_/"
+
+               GOBACK
+           ELSE IF W-PIECE(1) IS NOT = 'WK'
+               AND PLAYER-TURN = 'B'
+               SET B-WINNER TO TRUE
+               PERFORM FA-NEW-BOARD
+           DISPLAY " ____     __       ______  ____     __  __      __ "
+           " __  ______   ____    ______  _____   ____    __    __"
+           DISPLAY "/\  _`\  /\ \     /\  _  \/\  _`\  /\ \/\ \    /\ \"
+           "/\ \/\__  _\ /\  _`\ /\__  _\/\  __`\/\  _`\ /\ \  /\ \"
+           DISPLAY "\ \ \L\ \\ \ \    \ \ \L\ \ \ \/\_\\ \ \/'/'   \ \ "
+           "\ \ \/_/\ \/ \ \ \/\_\/_/\ \/\ \ \/\ \ \ \L\ \ `\`\\/'/"
+           DISPLAY " \ \  _ <'\ \ \  __\ \  __ \ \ \/_/_\ \ , <     \ \"
+           " \ \ \ \ \ \  \ \ \/_/_ \ \ \ \ \ \ \ \ \ ,  /`\ `\ /'"
+           DISPLAY "  \ \ \L\ \\ \ \L\ \\ \ \/\ \ \ \L\ \\ \ \\`\    \ "
+           "\ \_/ \ \_\ \__\ \ \L\ \ \ \ \ \ \ \_\ \ \ \\ \ `\ \ \"
+           DISPLAY "   \ \____/ \ \____/ \ \_\ \_\ \____/ \ \_\ \_\   \"
+           " `\___/ /\_____\\ \____/  \ \_\ \ \_____\ \_\ \_\ \ \_\"
+           DISPLAY "    \/___/   \/___/   \/_/\/_/\/___/   \/_/\/_/    "
+           "`\/__/  \/_____/ \/___/    \/_/  \/_____/\/_/\/ /  \/_/"
+               GOBACK
+           END-IF
+
+           .
+
+           FA-NEW-BOARD SECTION.
 
       *******************************************************************
-      *                        DA-NEW-BOARD SECTION                     *
+      *                        FA-NEW-BOARD SECTION                     *
       *******************************************************************
 
                DISPLAY " "
@@ -256,56 +304,9 @@
                DISPLAY " "
            .
 
-           F-CHECK-KING SECTION.
+           D-CHECK-KING SECTION.
 
-      *******************************************************************
-      *                        F-CHECK-KING SECTION                     *
-      *******************************************************************
 
-      *     DISPLAY "PERFORMING F-CHECK KING"
-
-           IF  B-PIECE(1) IS NOT = 'BK'
-               AND PLAYER-TURN = 'W'
-               SET W-WINNER TO TRUE
-               PERFORM DA-NEW-BOARD
-           DISPLAY " __      __  __  __  ______  ______  ____        __"
-           "  __  ______   ____    ______  _____   ____    __    __"
-           DISPLAY "/\ \  __/\ \/\ \/\ \/\__  _\/\__  _\/\  _`\     /\ "
-           "\/\ \/\__  _\ /\  _`\ /\__  _\/\  __`\/\  _`\ /\ \  /\ \"
-           DISPLAY "\ \ \/\ \ \ \ \ \_\ \/_/\ \/\/_/\ \/\ \ \L\_\   \ \"
-           " \ \ \/_/\ \/ \ \ \/\_\/_/\ \/\ \ \/\ \ \ \L\ \ `\`\\/'/"
-           DISPLAY " \ \ \ \ \ \ \ \  _  \ \ \ \   \ \ \ \ \  _\L    \ "
-           "\ \ \ \ \ \ \  \ \ \/_/_ \ \ \ \ \ \ \ \ \ ,  /`\ `\ /'"
-           DISPLAY "  \ \ \_/ \_\ \ \ \ \ \ \_\ \__ \ \ \ \ \ \L\ \   \"
-           " \ \_/ \ \_\ \__\ \ \L\ \ \ \ \ \ \ \_\ \ \ \\ \ `\ \ \"
-           DISPLAY "   \ `\___x___/\ \_\ \_\/\_____\ \ \_\ \ \____/    "
-           "\ `\___/ /\_____\\ \____/  \ \_\ \ \_____\ \_\ \_\ \ \_\"
-           DISPLAY "    '\/__//__/  \/_/\/_/\/_____/  \/_/  \/___/     "
-           " `\/__/  \/_____/ \/___/    \/_/  \/_____/\/_/\/ /  \/_/"
-
-               GOBACK
-           ELSE IF W-PIECE(1) IS NOT = 'WK'
-               AND PLAYER-TURN = 'B'
-               SET B-WINNER TO TRUE
-               PERFORM DA-NEW-BOARD
-           DISPLAY " ____     __       ______  ____     __  __      __ "
-           " __  ______   ____    ______  _____   ____    __    __"
-           DISPLAY "/\  _`\  /\ \     /\  _  \/\  _`\  /\ \/\ \    /\ \"
-           "/\ \/\__  _\ /\  _`\ /\__  _\/\  __`\/\  _`\ /\ \  /\ \"
-           DISPLAY "\ \ \L\ \\ \ \    \ \ \L\ \ \ \/\_\\ \ \/'/'   \ \ "
-           "\ \ \/_/\ \/ \ \ \/\_\/_/\ \/\ \ \/\ \ \ \L\ \ `\`\\/'/"
-           DISPLAY " \ \  _ <'\ \ \  __\ \  __ \ \ \/_/_\ \ , <     \ \"
-           " \ \ \ \ \ \  \ \ \/_/_ \ \ \ \ \ \ \ \ \ ,  /`\ `\ /'"
-           DISPLAY "  \ \ \L\ \\ \ \L\ \\ \ \/\ \ \ \L\ \\ \ \\`\    \ "
-           "\ \_/ \ \_\ \__\ \ \L\ \ \ \ \ \ \ \_\ \ \ \\ \ `\ \ \"
-           DISPLAY "   \ \____/ \ \____/ \ \_\ \_\ \____/ \ \_\ \_\   \"
-           " `\___/ /\_____\\ \____/  \ \_\ \ \_____\ \_\ \_\ \ \_\"
-           DISPLAY "    \/___/   \/___/   \/_/\/_/\/___/   \/_/\/_/    "
-           "`\/__/  \/_____/ \/___/    \/_/  \/_____/\/_/\/ /  \/_/"
-               GOBACK
-           END-IF
-
-           .
 
            GA-ACCEPT-W-CORD SECTION.
 
@@ -317,7 +318,7 @@
 
            SET NOT-VALID TO TRUE
 
-           PERFORM DA-NEW-BOARD
+           PERFORM FA-NEW-BOARD
 
            PERFORM UNTIL VALID-MOVE ='Y'
                DISPLAY " "
@@ -445,7 +446,7 @@
            MOVE '|' TO BRD-ROWS(INPUT-Y-VARIABLE)
            (((INPUT-X-VARIABLE-N * 3) + 2):1)
 
-           PERFORM DA-NEW-BOARD
+           PERFORM FA-NEW-BOARD
 
            PERFORM UNTIL VALID-MOVE ='Y'
 
@@ -509,7 +510,7 @@
 
            SET NOT-VALID TO TRUE
 
-           PERFORM DA-NEW-BOARD
+           PERFORM FA-NEW-BOARD
 
            PERFORM UNTIL VALID-MOVE ='Y'
                DISPLAY " "
