@@ -1033,6 +1033,7 @@
 
                WHEN OTHER
                    DISPLAY "INVALID HORSE MOVE"
+                   PERFORM GA-ACCEPT-W-CORD
 
                END-EVALUATE
 
@@ -1090,6 +1091,7 @@
 
                WHEN OTHER
                    DISPLAY "INVALID HORSE MOVE"
+                   PERFORM GB-ACCEPT-B-CORD
 
                END-EVALUATE
 
@@ -1666,26 +1668,26 @@
                WHEN OTHER
                    CONTINUE
 
-               END-EVALUATE
+           END-EVALUATE
 
-               IF INPUT-Y-VARIABLE = W-Y-POS(V-COUNTER)
-                   AND INPUT-X-VARIABLE-N = W-X-VAR(V-COUNTER)
-                   AND TYPE-MOVE NOT = 'NMO'
-                   DISPLAY "INVALID MOVE: WHITE PIECE HERE"
-                   SET NOT-VALID TO TRUE
-                   PERFORM GA-ACCEPT-W-CORD
+           IF INPUT-Y-VARIABLE = W-Y-POS(V-COUNTER)
+               AND INPUT-X-VARIABLE-N = W-X-VAR(V-COUNTER)
+               AND TYPE-MOVE NOT = 'NMO'
+               DISPLAY "INVALID MOVE: WHITE PIECE HERE"
+               SET NOT-VALID TO TRUE
+               PERFORM GA-ACCEPT-W-CORD
 
-               ELSE IF INPUT-Y-VARIABLE = B-Y-POS(W-COUNTER)
-                   AND INPUT-X-VARIABLE-N = B-X-VAR(W-COUNTER)
-                   AND TYPE-MOVE NOT = 'NMO'
-                   MOVE '--' TO B-PIECE(W-COUNTER)
-                   MOVE 0 TO B-X-POS(W-COUNTER)
-                   MOVE 0 TO B-Y-POS(W-COUNTER)
-                   PERFORM IBB-MOVE-POS
-               ELSE
-                   SET IS-VALID TO TRUE
-                   PERFORM IBB-MOVE-POS
-               END-IF
+           ELSE IF INPUT-Y-VARIABLE = B-Y-POS(W-COUNTER)
+               AND INPUT-X-VARIABLE-N = B-X-VAR(W-COUNTER)
+               AND TYPE-MOVE NOT = 'NMO'
+               MOVE '--' TO B-PIECE(W-COUNTER)
+               MOVE 0 TO B-X-POS(W-COUNTER)
+               MOVE 0 TO B-Y-POS(W-COUNTER)
+               PERFORM IBB-MOVE-POS
+           ELSE
+               SET IS-VALID TO TRUE
+               PERFORM IBB-MOVE-POS
+           END-IF
 
            .
 
