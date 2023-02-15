@@ -1994,25 +1994,25 @@
       *                  IBAC-CHECK-INFRONT SECTION                     *
       *******************************************************************
 
-               IF B-X-VAR(Z-COUNTER) = X-COUNTER
-               AND B-Y-POS(Z-COUNTER) = Y-COUNTER
-               AND (X-COUNTER NOT = INPUT-X-VARIABLE-N
-               OR Y-COUNTER NOT = INPUT-Y-VARIABLE)
+           IF B-X-VAR(Z-COUNTER) = X-COUNTER
+           AND B-Y-POS(Z-COUNTER) = Y-COUNTER
+           AND (X-COUNTER NOT = INPUT-X-VARIABLE-N
+           OR Y-COUNTER NOT = INPUT-Y-VARIABLE)
 
-                   DISPLAY "BLACK PIECE IN FRONT OF THE "
+               DISPLAY "BLACK PIECE IN FRONT OF THE "
+                   "WANTED POSITION"
+               PERFORM GA-ACCEPT-W-CORD
+           END-IF
+
+           IF W-X-VAR(Z-COUNTER) = X-COUNTER
+              AND W-Y-POS(Z-COUNTER) = Y-COUNTER
+              AND X-COUNTER NOT = INPUT-X-VARIABLE-N
+              AND Y-COUNTER NOT = INPUT-Y-VARIABLE
+
+               DISPLAY "WHITE PIECE IN FRONT OF THE "
                        "WANTED POSITION"
-                   PERFORM GA-ACCEPT-W-CORD
-               END-IF
-
-               IF W-X-VAR(Z-COUNTER) = X-COUNTER
-                  AND W-Y-POS(Z-COUNTER) = Y-COUNTER
-                  AND X-COUNTER NOT = INPUT-X-VARIABLE-N
-                  AND Y-COUNTER NOT = INPUT-Y-VARIABLE
-
-                   DISPLAY "WHITE PIECE IN FRONT OF THE "
-                           "WANTED POSITION"
-                   PERFORM GB-ACCEPT-B-CORD
-               END-IF
+               PERFORM GB-ACCEPT-B-CORD
+           END-IF
 
            .
 
