@@ -4,6 +4,9 @@
       * Purpose: Practicing COBOL logic
       * Tectonics: cobc
       ******************************************************************
+      * THIS PROGRAM IS A CHESS PROGRAM WRITTEN IN THE WONDERFUL       *
+      * LANGUAGE OF COBOL!                                             *
+      ******************************************************************
        IDENTIFICATION DIVISION.
       *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
        PROGRAM-ID. CHESS-V1.
