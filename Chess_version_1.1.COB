@@ -1,7 +1,7 @@
       ******************************************************************
-      * Author:
-      * Date:
-      * Purpose:
+      * Author: Anton Bystedt
+      * Date: 2022-02-16
+      * Purpose: Practicing COBOL logic
       * Tectonics: cobc
       ******************************************************************
        IDENTIFICATION DIVISION.
@@ -1953,7 +1953,7 @@
                    ADD 1 TO X-COUNTER
 
                END-PERFORM
-            WHEN OTHER
+           WHEN OTHER
                CONTINUE
 
            END-EVALUATE
@@ -2012,12 +2012,12 @@
       *                        IBB-MOVE-POS SECTION                     *
       *******************************************************************
 
-
            SET N-MO TO TRUE
 
 
            EVALUATE TRUE
            WHEN PLAYER-TURN = 'W'
+               AND VALID-MOVE = 'Y'
 
                MOVE "--" TO
                    BRD-ROWS(W-Y-POS(U-COUNTER))(W-X-POS(U-COUNTER):2)
@@ -2026,12 +2026,17 @@
                MOVE 'N' TO W-FIRST(U-COUNTER)
 
            WHEN PLAYER-TURN = 'B'
+               AND VALID-MOVE = 'Y'
 
                MOVE "--" TO
                    BRD-ROWS(B-Y-POS(U-COUNTER))(B-X-POS(U-COUNTER):2)
                MOVE INPUT-Y-VARIABLE TO B-Y-POS(U-COUNTER)
                MOVE INPUT-X-VARIABLE-N TO B-X-VAR(U-COUNTER)
                MOVE 'N' TO B-FIRST(U-COUNTER)
+
+           WHEN OTHER
+               DISPLAY "ERROR"
+               PERFORM GA-ACCEPT-CORD
 
            END-EVALUATE
 
