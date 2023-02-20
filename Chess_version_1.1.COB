@@ -554,8 +554,10 @@
                        SET IS-VALID TO TRUE
                    END-IF
 
+
+               WHEN U-COUNTER = 6 OR 5
+                   SET IS-VALID TO TRUE
                WHEN OTHER
-               DISPLAY TYPE-MOVE
                    DISPLAY "INVALID MOVE"
                    SET NOT-VALID TO TRUE
                    PERFORM GA-ACCEPT-CORD
@@ -737,6 +739,7 @@
       *******************************************************************
 
            SET N-MO TO TRUE
+           SET NOT-VALID TO TRUE
 
            EVALUATE TRUE
 
