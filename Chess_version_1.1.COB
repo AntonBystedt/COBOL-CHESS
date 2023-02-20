@@ -101,7 +101,6 @@
            .
 
 
-
            B-MAIN SECTION.
 
       *******************************************************************
@@ -123,7 +122,6 @@
                PERFORM D-CHECK-KING
                SET W-TURN TO TRUE
                PERFORM GA-ACCEPT-CORD
-
 
            END-PERFORM
 
@@ -317,6 +315,7 @@
       *******************************************************************
 
            SET NOT-VALID TO TRUE
+           SET N-MO TO TRUE
 
            PERFORM FA-NEW-BOARD
            EVALUATE PLAYER-TURN
@@ -489,7 +488,150 @@
       *                      GAD-CHECK-MOVE SECTION                     *
       *******************************************************************
 
-           SET N-MO TO TRUE
+      **************************EVALUATE WHITE***************************
+
+           EVALUATE TRUE
+           WHEN PLAYER-TURN = 'W'
+               EVALUATE TRUE
+               WHEN (W-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N) =
+               (W-Y-POS(U-COUNTER) - INPUT-Y-VARIABLE) AND
+               (W-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N >=0)
+               AND TYPE-MOVE = 'NMO'
+
+                   SET D-L-U TO TRUE
+                   SET IS-VALID TO TRUE
+
+               WHEN
+               (INPUT-X-VARIABLE-N - W-X-VAR(U-COUNTER)) =
+               (W-Y-POS(U-COUNTER)- INPUT-Y-VARIABLE) AND
+               (INPUT-X-VARIABLE-N - W-X-VAR(U-COUNTER) >=0 )
+               AND TYPE-MOVE = 'NMO'
+
+                   SET D-R-U TO TRUE
+                   SET IS-VALID TO TRUE
+
+               WHEN
+              (W-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N) =
+              (INPUT-Y-VARIABLE - W-Y-POS(U-COUNTER))
+              AND TYPE-MOVE = 'NMO'
+
+                   SET D-L-D TO TRUE
+                   SET IS-VALID TO TRUE
+
+               WHEN
+               (INPUT-X-VARIABLE-N - W-X-VAR(U-COUNTER) ) =
+               (INPUT-Y-VARIABLE - W-Y-POS(U-COUNTER))
+               AND TYPE-MOVE = 'NMO'
+
+                   SET D-R-D TO TRUE
+                   SET IS-VALID TO TRUE
+
+               WHEN
+               (INPUT-X-VARIABLE-N = W-X-VAR(U-COUNTER) AND
+               INPUT-Y-VARIABLE IS NOT = W-Y-POS(U-COUNTER))
+               AND TYPE-MOVE = 'NMO'
+
+                   IF INPUT-Y-VARIABLE > W-Y-POS(U-COUNTER)
+                       SET S-DN TO TRUE
+                       SET IS-VALID TO TRUE
+                   ELSE IF INPUT-Y-VARIABLE < W-Y-POS(U-COUNTER)
+                       SET S-UP TO TRUE
+                       SET IS-VALID TO TRUE
+                   END-IF
+
+                   SET IS-VALID TO TRUE
+
+               WHEN
+               (INPUT-X-VARIABLE-N IS NOT = W-X-VAR(U-COUNTER) AND
+               INPUT-Y-VARIABLE = W-Y-POS(U-COUNTER))
+               AND TYPE-MOVE = 'NMO'
+
+                   IF INPUT-X-VARIABLE-N > W-X-VAR(U-COUNTER)
+                       SET S-RI TO TRUE
+                       SET IS-VALID TO TRUE
+                   ELSE IF INPUT-X-VARIABLE-N < W-X-VAR(U-COUNTER)
+                       SET S-LE TO TRUE
+                       SET IS-VALID TO TRUE
+                   END-IF
+
+               WHEN OTHER
+               DISPLAY TYPE-MOVE
+                   DISPLAY "INVALID MOVE"
+                   SET NOT-VALID TO TRUE
+                   PERFORM GA-ACCEPT-CORD
+
+               END-EVALUATE
+
+      **************************EVALUATE BLACK**************************
+
+           WHEN PLAYER-TURN = 'B'
+
+               EVALUATE TRUE
+               WHEN (B-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N) =
+               (B-Y-POS(U-COUNTER)- INPUT-Y-VARIABLE) AND
+               (B-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N >=0)
+               AND TYPE-MOVE = 'NMO'
+
+                   SET D-L-U TO TRUE
+                   SET IS-VALID TO TRUE
+
+               WHEN
+               (INPUT-X-VARIABLE-N - B-X-VAR(U-COUNTER)) =
+               (B-Y-POS(U-COUNTER)- INPUT-Y-VARIABLE) AND
+               INPUT-X-VARIABLE-N -(B-X-VAR(U-COUNTER)) >=0
+               AND TYPE-MOVE = 'NMO'
+
+                   SET D-R-U TO TRUE
+                   SET IS-VALID TO TRUE
+
+               WHEN
+              (B-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N) =
+              (INPUT-Y-VARIABLE - B-Y-POS(U-COUNTER))
+              AND TYPE-MOVE = 'NMO'
+
+                   SET D-L-D TO TRUE
+                   SET IS-VALID TO TRUE
+
+               WHEN
+               (INPUT-X-VARIABLE-N - B-X-VAR(U-COUNTER) ) =
+               (INPUT-Y-VARIABLE - B-Y-POS(U-COUNTER))
+               AND TYPE-MOVE = 'NMO'
+
+                   SET D-R-D TO TRUE
+                   SET IS-VALID TO TRUE
+
+               WHEN
+               (INPUT-X-VARIABLE-N = B-X-VAR(U-COUNTER) AND
+               INPUT-Y-VARIABLE IS NOT = B-Y-POS(U-COUNTER))
+               AND TYPE-MOVE = 'NMO'
+
+                   IF INPUT-Y-VARIABLE > B-Y-POS(U-COUNTER)
+                       SET S-DN TO TRUE
+                       SET IS-VALID TO TRUE
+                   ELSE IF INPUT-Y-VARIABLE < B-Y-POS(U-COUNTER)
+                       SET S-UP TO TRUE
+                       SET IS-VALID TO TRUE
+                   END-IF
+
+                   SET IS-VALID TO TRUE
+
+               WHEN
+               (INPUT-X-VARIABLE-N IS NOT = B-X-VAR(U-COUNTER) AND
+               INPUT-Y-VARIABLE = B-Y-POS(U-COUNTER))
+               AND TYPE-MOVE = 'NMO'
+
+                   IF INPUT-X-VARIABLE-N > B-X-VAR(U-COUNTER)
+                       SET S-RI TO TRUE
+                       SET IS-VALID TO TRUE
+                   ELSE IF INPUT-X-VARIABLE-N < B-X-VAR(U-COUNTER)
+                       SET S-LE TO TRUE
+                       SET IS-VALID TO TRUE
+                   END-IF
+
+               END-EVALUATE
+
+           END-EVALUATE
+
            EVALUATE U-COUNTER
            WHEN 1
                PERFORM HA-CHECK-KING
@@ -507,6 +649,7 @@
            .
 
            HA-CHECK-KING SECTION.
+
 
       *******************************************************************
       *                       HA-CHECK-KING SECTION                     *
@@ -527,144 +670,11 @@
                    SET NOT-VALID TO TRUE
                    PERFORM GA-ACCEPT-CORD
 
-               WHEN (W-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N) =
-               (W-Y-POS(U-COUNTER) - INPUT-Y-VARIABLE) AND
-               (W-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N >=0)
-               AND TYPE-MOVE = 'NMO'
-
-                   SET D-L-U TO TRUE
-                   SET IS-VALID TO TRUE
-
-               WHEN
-               (INPUT-X-VARIABLE-N - W-X-VAR(U-COUNTER)) =
-               (W-Y-POS(U-COUNTER)- INPUT-Y-VARIABLE) AND
-               (INPUT-X-VARIABLE-N - W-X-VAR(U-COUNTER) >=0 )
-               AND TYPE-MOVE = 'NMO'
-
-                   SET D-R-U TO TRUE
-                   SET IS-VALID TO TRUE
-
-               WHEN
-              (W-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N) =
-              (INPUT-Y-VARIABLE - W-Y-POS(U-COUNTER))
-              AND TYPE-MOVE = 'NMO'
-
-                   SET D-L-D TO TRUE
-                   SET IS-VALID TO TRUE
-
-               WHEN
-               (INPUT-X-VARIABLE-N - W-X-VAR(U-COUNTER) ) =
-               (INPUT-Y-VARIABLE - W-Y-POS(U-COUNTER))
-               AND TYPE-MOVE = 'NMO'
-
-                   SET D-R-D TO TRUE
-                   SET IS-VALID TO TRUE
-
-               WHEN
-               (INPUT-X-VARIABLE-N = W-X-VAR(U-COUNTER) AND
-               INPUT-Y-VARIABLE IS NOT = W-Y-POS(U-COUNTER))
-               AND TYPE-MOVE = 'NMO'
-
-                   IF INPUT-Y-VARIABLE > W-Y-POS(U-COUNTER)
-                       SET S-DN TO TRUE
-                       SET IS-VALID TO TRUE
-                   ELSE IF INPUT-Y-VARIABLE < W-Y-POS(U-COUNTER)
-                       SET S-UP TO TRUE
-                       SET IS-VALID TO TRUE
-                   END-IF
-
-                   SET IS-VALID TO TRUE
-
-               WHEN
-               (INPUT-X-VARIABLE-N IS NOT = W-X-VAR(U-COUNTER) AND
-               INPUT-Y-VARIABLE = W-Y-POS(U-COUNTER))
-               AND TYPE-MOVE = 'NMO'
-
-                   IF INPUT-X-VARIABLE-N > W-X-VAR(U-COUNTER)
-                       SET S-RI TO TRUE
-                       SET IS-VALID TO TRUE
-                   ELSE IF INPUT-X-VARIABLE-N < W-X-VAR(U-COUNTER)
-                       SET S-LE TO TRUE
-                       SET IS-VALID TO TRUE
-                   END-IF
-
-               WHEN OTHER
-                   DISPLAY "INVALID MOVE"
-                   SET NOT-VALID TO TRUE
-                   PERFORM GA-ACCEPT-CORD
-
-               END-EVALUATE
-
-               IF VALID-MOVE = 'Y' AND TYPE-MOVE NOT = 'NMO'
-                   PERFORM IBA-CHECK-POS
-               END-IF
 
       **************************EVALUATE BLACK**************************
 
            WHEN PLAYER-TURN = 'B'
-
-           EVALUATE TRUE
-               WHEN (B-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N) =
-               (B-Y-POS(U-COUNTER)- INPUT-Y-VARIABLE) AND
-               (B-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N >=0)
-               AND TYPE-MOVE = 'NMO'
-
-                   SET D-L-U TO TRUE
-                   SET IS-VALID TO TRUE
-
-               WHEN
-               (INPUT-X-VARIABLE-N - B-X-VAR(U-COUNTER)) =
-               (B-Y-POS(U-COUNTER)- INPUT-Y-VARIABLE) AND
-               INPUT-X-VARIABLE-N -(B-X-VAR(U-COUNTER)) >=0
-               AND TYPE-MOVE = 'NMO'
-
-                   SET D-R-U TO TRUE
-                   SET IS-VALID TO TRUE
-
-               WHEN
-              (B-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N) =
-              (INPUT-Y-VARIABLE - B-Y-POS(U-COUNTER))
-              AND TYPE-MOVE = 'NMO'
-
-                   SET D-L-D TO TRUE
-                   SET IS-VALID TO TRUE
-
-               WHEN
-               (INPUT-X-VARIABLE-N - B-X-VAR(U-COUNTER) ) =
-               (INPUT-Y-VARIABLE - B-Y-POS(U-COUNTER))
-               AND TYPE-MOVE = 'NMO'
-
-                   SET D-R-D TO TRUE
-                   SET IS-VALID TO TRUE
-
-               WHEN
-               (INPUT-X-VARIABLE-N = B-X-VAR(U-COUNTER) AND
-               INPUT-Y-VARIABLE IS NOT = B-Y-POS(U-COUNTER))
-               AND TYPE-MOVE = 'NMO'
-
-                   IF INPUT-Y-VARIABLE > B-Y-POS(U-COUNTER)
-                       SET S-DN TO TRUE
-                       SET IS-VALID TO TRUE
-                   ELSE IF INPUT-Y-VARIABLE < B-Y-POS(U-COUNTER)
-                       SET S-UP TO TRUE
-                       SET IS-VALID TO TRUE
-                   END-IF
-
-                   SET IS-VALID TO TRUE
-
-               WHEN
-               (INPUT-X-VARIABLE-N IS NOT = B-X-VAR(U-COUNTER) AND
-               INPUT-Y-VARIABLE = B-Y-POS(U-COUNTER))
-               AND TYPE-MOVE = 'NMO'
-
-                   IF INPUT-X-VARIABLE-N > B-X-VAR(U-COUNTER)
-                       SET S-RI TO TRUE
-                       SET IS-VALID TO TRUE
-                   ELSE IF INPUT-X-VARIABLE-N < B-X-VAR(U-COUNTER)
-                       SET S-LE TO TRUE
-                       SET IS-VALID TO TRUE
-                   END-IF
-
+               EVALUATE TRUE
                WHEN
                (INPUT-X-VARIABLE-N - B-X-VAR(U-COUNTER) > 1) OR
                (INPUT-X-VARIABLE-N - B-X-VAR(U-COUNTER) < -1) OR
@@ -674,20 +684,16 @@
                    "ANY DIRECTION"
                    SET NOT-VALID TO TRUE
                    PERFORM GA-ACCEPT-CORD
-
-
-               WHEN OTHER
-                   DISPLAY "INVALID MOVE"
-                   SET NOT-VALID TO TRUE
-                   PERFORM GA-ACCEPT-CORD
-
                END-EVALUATE
 
-               IF VALID-MOVE = 'Y' AND TYPE-MOVE NOT = 'NMO'
-                   PERFORM IBA-CHECK-POS
-               END-IF
-
            END-EVALUATE
+
+           IF VALID-MOVE = 'Y' AND TYPE-MOVE NOT = 'NMO'
+               PERFORM IBA-CHECK-POS
+           ELSE
+               DISPLAY "INCORRECT MOVE"
+               PERFORM GA-ACCEPT-CORD
+           END-IF
 
            .
 
@@ -697,167 +703,12 @@
       *                      HB-CHECK-QUEEN SECTION                     *
       *******************************************************************
 
-           SET N-MO TO TRUE
-
-      **************************EVALUATE WHITE**************************
-
-           EVALUATE TRUE
-           WHEN PLAYER-TURN = 'W'
-               EVALUATE TRUE
-               WHEN (W-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N) =
-               (W-Y-POS(U-COUNTER) - INPUT-Y-VARIABLE) AND
-               (W-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N >=0)
-               AND TYPE-MOVE = 'NMO'
-
-                   SET D-L-U TO TRUE
-                   SET IS-VALID TO TRUE
-
-               WHEN
-               (INPUT-X-VARIABLE-N - W-X-VAR(U-COUNTER)) =
-               (W-Y-POS(U-COUNTER)- INPUT-Y-VARIABLE) AND
-               (INPUT-X-VARIABLE-N - W-X-VAR(U-COUNTER) >=0 )
-               AND TYPE-MOVE = 'NMO'
-
-                   SET D-R-U TO TRUE
-                   SET IS-VALID TO TRUE
-
-               WHEN
-              (W-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N) =
-              (INPUT-Y-VARIABLE - W-Y-POS(U-COUNTER))
-              AND TYPE-MOVE = 'NMO'
-
-                   SET D-L-D TO TRUE
-                   SET IS-VALID TO TRUE
-
-               WHEN
-               (INPUT-X-VARIABLE-N - W-X-VAR(U-COUNTER) ) =
-               (INPUT-Y-VARIABLE - W-Y-POS(U-COUNTER))
-               AND TYPE-MOVE = 'NMO'
-
-                   SET D-R-D TO TRUE
-                   SET IS-VALID TO TRUE
-
-               WHEN
-               (INPUT-X-VARIABLE-N = W-X-VAR(U-COUNTER) AND
-               INPUT-Y-VARIABLE IS NOT = W-Y-POS(U-COUNTER))
-               AND TYPE-MOVE = 'NMO'
-
-                   IF INPUT-Y-VARIABLE > W-Y-POS(U-COUNTER)
-                       SET S-DN TO TRUE
-                       SET IS-VALID TO TRUE
-                   ELSE IF INPUT-Y-VARIABLE < W-Y-POS(U-COUNTER)
-                       SET S-UP TO TRUE
-                       SET IS-VALID TO TRUE
-                   END-IF
-
-                   SET IS-VALID TO TRUE
-
-               WHEN
-               (INPUT-X-VARIABLE-N IS NOT = W-X-VAR(U-COUNTER) AND
-               INPUT-Y-VARIABLE = W-Y-POS(U-COUNTER))
-               AND TYPE-MOVE = 'NMO'
-
-                   IF INPUT-X-VARIABLE-N > W-X-VAR(U-COUNTER)
-                       SET S-RI TO TRUE
-                       SET IS-VALID TO TRUE
-                   ELSE IF INPUT-X-VARIABLE-N < W-X-VAR(U-COUNTER)
-                       SET S-LE TO TRUE
-                       SET IS-VALID TO TRUE
-                   END-IF
-
-
-               WHEN OTHER
-                   DISPLAY "INVALID MOVE"
-                   SET NOT-VALID TO TRUE
-                   PERFORM GA-ACCEPT-CORD
-
-               END-EVALUATE
-
-               IF VALID-MOVE = 'Y' AND TYPE-MOVE NOT = 'NMO'
-                   PERFORM IBA-CHECK-POS
-               END-IF
-
-      **************************EVALUATE BLACK**************************
-
-           WHEN PLAYER-TURN = 'B'
-
-           EVALUATE TRUE
-               WHEN (B-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N) =
-               (B-Y-POS(U-COUNTER)- INPUT-Y-VARIABLE) AND
-               (B-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N >=0)
-               AND TYPE-MOVE = 'NMO'
-
-                   SET D-L-U TO TRUE
-                   SET IS-VALID TO TRUE
-
-               WHEN
-               (INPUT-X-VARIABLE-N - B-X-VAR(U-COUNTER)) =
-               (B-Y-POS(U-COUNTER)- INPUT-Y-VARIABLE) AND
-               INPUT-X-VARIABLE-N -(B-X-VAR(U-COUNTER)) >=0
-               AND TYPE-MOVE = 'NMO'
-
-                   SET D-R-U TO TRUE
-                   SET IS-VALID TO TRUE
-
-               WHEN
-              (B-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N) =
-              (INPUT-Y-VARIABLE - B-Y-POS(U-COUNTER))
-              AND TYPE-MOVE = 'NMO'
-
-                   SET D-L-D TO TRUE
-                   SET IS-VALID TO TRUE
-
-               WHEN
-               (INPUT-X-VARIABLE-N - B-X-VAR(U-COUNTER) ) =
-               (INPUT-Y-VARIABLE - B-Y-POS(U-COUNTER))
-               AND TYPE-MOVE = 'NMO'
-
-                   SET D-R-D TO TRUE
-                   SET IS-VALID TO TRUE
-
-               WHEN
-               (INPUT-X-VARIABLE-N = B-X-VAR(U-COUNTER) AND
-               INPUT-Y-VARIABLE IS NOT = B-Y-POS(U-COUNTER))
-               AND TYPE-MOVE = 'NMO'
-
-                   IF INPUT-Y-VARIABLE > B-Y-POS(U-COUNTER)
-                       SET S-DN TO TRUE
-                       SET IS-VALID TO TRUE
-                   ELSE IF INPUT-Y-VARIABLE < B-Y-POS(U-COUNTER)
-                       SET S-UP TO TRUE
-                       SET IS-VALID TO TRUE
-                   END-IF
-
-                   SET IS-VALID TO TRUE
-
-               WHEN
-               (INPUT-X-VARIABLE-N IS NOT = B-X-VAR(U-COUNTER) AND
-               INPUT-Y-VARIABLE = B-Y-POS(U-COUNTER))
-               AND TYPE-MOVE = 'NMO'
-
-                   IF INPUT-X-VARIABLE-N > B-X-VAR(U-COUNTER)
-                       SET S-RI TO TRUE
-                       SET IS-VALID TO TRUE
-                   ELSE IF INPUT-X-VARIABLE-N < B-X-VAR(U-COUNTER)
-                       SET S-LE TO TRUE
-                       SET IS-VALID TO TRUE
-                   END-IF
-
-
-               WHEN OTHER
-                   DISPLAY "INVALID MOVE"
-                   SET NOT-VALID TO TRUE
-                   PERFORM GA-ACCEPT-CORD
-
-               END-EVALUATE
-
-               IF VALID-MOVE = 'Y' AND TYPE-MOVE NOT = 'NMO'
-                   DISPLAY "MOVE IS VALID, WILL PERFORM IBA-CHECK"
-                   PERFORM IBA-CHECK-POS
-               END-IF
-
-           END-EVALUATE
-
+           IF VALID-MOVE = 'Y' AND TYPE-MOVE NOT = 'NMO'
+               PERFORM IBA-CHECK-POS
+           ELSE
+               DISPLAY "INCORRECT MOVE"
+               PERFORM GA-ACCEPT-CORD
+           END-IF
 
            .
 
@@ -867,97 +718,15 @@
       *                      HC-CHECK-ROOK SECTION                      *
       *******************************************************************
 
-           SET N-MO TO TRUE
 
-           EVALUATE TRUE
-
-      **************************EVALUATE WHITE**************************
-
-           WHEN PLAYER-TURN = 'W'
-               EVALUATE TRUE
-               WHEN
-               (INPUT-X-VARIABLE-N = W-X-VAR(U-COUNTER) AND
-               INPUT-Y-VARIABLE IS NOT = W-Y-POS(U-COUNTER))
-               AND TYPE-MOVE = 'NMO'
-
-                   IF INPUT-Y-VARIABLE > W-Y-POS(U-COUNTER)
-                       SET S-DN TO TRUE
-                       SET IS-VALID TO TRUE
-                   ELSE IF INPUT-Y-VARIABLE < W-Y-POS(U-COUNTER)
-                       SET S-UP TO TRUE
-                       SET IS-VALID TO TRUE
-                   END-IF
-
-                   SET IS-VALID TO TRUE
-
-               WHEN
-               (INPUT-X-VARIABLE-N IS NOT = W-X-VAR(U-COUNTER) AND
-               INPUT-Y-VARIABLE = W-Y-POS(U-COUNTER))
-               AND TYPE-MOVE = 'NMO'
-
-                   IF INPUT-X-VARIABLE-N > W-X-VAR(U-COUNTER)
-                       SET S-RI TO TRUE
-                       SET IS-VALID TO TRUE
-                   ELSE IF INPUT-X-VARIABLE-N < W-X-VAR(U-COUNTER)
-                       SET S-LE TO TRUE
-                       SET IS-VALID TO TRUE
-                   END-IF
-
-
-               WHEN OTHER
-                   DISPLAY "INVALID MOVE"
-                   SET NOT-VALID TO TRUE
-                   PERFORM GA-ACCEPT-CORD
-
-               END-EVALUATE
-
-           WHEN PLAYER-TURN = 'B'
-               EVALUATE TRUE
-
-      **************************EVALUATE BLACK**************************
-
-               WHEN
-               (INPUT-X-VARIABLE-N = B-X-VAR(U-COUNTER) AND
-               INPUT-Y-VARIABLE IS NOT = B-Y-POS(U-COUNTER))
-               AND TYPE-MOVE = 'NMO'
-
-                   IF INPUT-Y-VARIABLE > B-Y-POS(U-COUNTER)
-                       SET S-DN TO TRUE
-                       SET IS-VALID TO TRUE
-                   ELSE IF INPUT-Y-VARIABLE < B-Y-POS(U-COUNTER)
-                       SET S-UP TO TRUE
-                       SET IS-VALID TO TRUE
-                   END-IF
-
-                   SET IS-VALID TO TRUE
-
-               WHEN
-               (INPUT-X-VARIABLE-N IS NOT = B-X-VAR(U-COUNTER) AND
-               INPUT-Y-VARIABLE = B-Y-POS(U-COUNTER))
-               AND TYPE-MOVE = 'NMO'
-
-                   IF INPUT-X-VARIABLE-N > B-X-VAR(U-COUNTER)
-                       SET S-RI TO TRUE
-                       SET IS-VALID TO TRUE
-                   ELSE IF INPUT-X-VARIABLE-N < B-X-VAR(U-COUNTER)
-                       SET S-LE TO TRUE
-                       SET IS-VALID TO TRUE
-                   END-IF
-
-
-               WHEN OTHER
-                   DISPLAY "INVALID MOVE"
-                   SET NOT-VALID TO TRUE
-                   PERFORM GA-ACCEPT-CORD
-
-               END-EVALUATE
-
-
+           EVALUATE TYPE-MOVE
+           WHEN
+           'SUP' WHEN 'SDN' WHEN 'SRI' WHEN 'SLE'
+               PERFORM IBA-CHECK-POS
+           WHEN OTHER
+               DISPLAY "INVALID MOVE"
+               PERFORM GA-ACCEPT-CORD
            END-EVALUATE
-
-           IF VALID-MOVE = 'Y' AND TYPE-MOVE NOT = 'NMO'
-                   PERFORM IBA-CHECK-POS
-               END-IF
 
            .
 
@@ -1103,108 +872,14 @@
       *                    HE-CHECK-BISHOP SECTION                      *
       *******************************************************************
 
-           SET N-MO TO TRUE
-
-           EVALUATE TRUE
-
-      **************************EVALUATE WHITE**************************
-
-           WHEN PLAYER-TURN = 'W'
-               EVALUATE TRUE
-               WHEN (W-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N) =
-               (W-Y-POS(U-COUNTER) - INPUT-Y-VARIABLE) AND
-               (W-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N >=0)
-               AND TYPE-MOVE = 'NMO'
-
-                   SET D-L-U TO TRUE
-                   SET IS-VALID TO TRUE
-
-               WHEN
-               (INPUT-X-VARIABLE-N - W-X-VAR(U-COUNTER)) =
-               (W-Y-POS(U-COUNTER)- INPUT-Y-VARIABLE) AND
-               (INPUT-X-VARIABLE-N - W-X-VAR(U-COUNTER) >=0 )
-               AND TYPE-MOVE = 'NMO'
-
-                   SET D-R-U TO TRUE
-                   SET IS-VALID TO TRUE
-
-               WHEN
-              (W-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N) =
-              (INPUT-Y-VARIABLE - W-Y-POS(U-COUNTER))
-              AND TYPE-MOVE = 'NMO'
-
-                   SET D-L-D TO TRUE
-                   SET IS-VALID TO TRUE
-
-               WHEN
-               (INPUT-X-VARIABLE-N - W-X-VAR(U-COUNTER) ) =
-               (INPUT-Y-VARIABLE - W-Y-POS(U-COUNTER))
-               AND TYPE-MOVE = 'NMO'
-
-                   SET D-R-D TO TRUE
-                   SET IS-VALID TO TRUE
-
-               WHEN OTHER
-                   DISPLAY "INVALID MOVE"
-                   SET NOT-VALID TO TRUE
-                   PERFORM GA-ACCEPT-CORD
-
-              END-EVALUATE
-
-              IF VALID-MOVE = 'Y' AND TYPE-MOVE NOT = 'NMO'
-                   PERFORM IBA-CHECK-POS
-              END-IF
-
-      **************************EVALUATE BLACK**************************
-
-           WHEN PLAYER-TURN = 'B'
-               EVALUATE TRUE
-               WHEN (B-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N) =
-               (B-Y-POS(U-COUNTER) - INPUT-Y-VARIABLE) AND
-               (B-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N >=0)
-               AND TYPE-MOVE = 'NMO'
-
-                   SET D-L-U TO TRUE
-                   SET IS-VALID TO TRUE
-
-               WHEN
-               (INPUT-X-VARIABLE-N - B-X-VAR(U-COUNTER)) =
-               (B-Y-POS(U-COUNTER)- INPUT-Y-VARIABLE) AND
-               (INPUT-X-VARIABLE-N - B-X-VAR(U-COUNTER) >=0 )
-               AND TYPE-MOVE = 'NMO'
-
-                   SET D-R-U TO TRUE
-                   SET IS-VALID TO TRUE
-
-               WHEN
-              (B-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N) =
-              (INPUT-Y-VARIABLE - B-Y-POS(U-COUNTER))
-              AND TYPE-MOVE = 'NMO'
-
-                   SET D-L-D TO TRUE
-                   SET IS-VALID TO TRUE
-
-               WHEN
-               (INPUT-X-VARIABLE-N - B-X-VAR(U-COUNTER) ) =
-               (INPUT-Y-VARIABLE - B-Y-POS(U-COUNTER))
-               AND TYPE-MOVE = 'NMO'
-
-                   SET D-R-D TO TRUE
-                   SET IS-VALID TO TRUE
-
-               WHEN OTHER
-                   DISPLAY "INVALID MOVE"
-                   SET NOT-VALID TO TRUE
-                   PERFORM GA-ACCEPT-CORD
-
-              END-EVALUATE
-
-           IF VALID-MOVE = 'Y' AND TYPE-MOVE NOT = 'NMO'
-                   PERFORM IBA-CHECK-POS
-               END-IF
-
+           EVALUATE TYPE-MOVE
+           WHEN 'SUP' WHEN 'SDN' WHEN 'SRI' WHEN 'SLE'
+               PERFORM IBA-CHECK-POS
+           WHEN OTHER
+               DISPLAY "INVALID MOVE"
+               SET NOT-VALID TO TRUE
+               PERFORM GA-ACCEPT-CORD
            END-EVALUATE
-
            .
 
            HF-CHECK-PAWN SECTION.
@@ -1212,8 +887,6 @@
       *******************************************************************
       *                      HF-CHECK-PAWN SECTION                      *
       *******************************************************************
-
-           SET N-MO TO TRUE
 
            EVALUATE TRUE
 
@@ -1239,45 +912,21 @@
                    SET NOT-VALID TO TRUE
                    PERFORM GA-ACCEPT-CORD
 
-               WHEN (W-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N) =
-               (W-Y-POS(U-COUNTER) - INPUT-Y-VARIABLE) AND
-               (W-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N >=0)
-               AND
+               WHEN TYPE-MOVE = 'DLU' AND
                (W-Y-POS(U-COUNTER) - INPUT-Y-VARIABLE  = 1)
                AND
                (W-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N  = 1)
-               AND TYPE-MOVE = 'NMO'
+                   SET IS-VALID TO TRUE
 
-                       SET D-L-U TO TRUE
-                       SET IS-VALID TO TRUE
-
-               WHEN
-               (INPUT-X-VARIABLE-N - W-X-VAR(U-COUNTER)) =
-               (W-Y-POS(U-COUNTER)- INPUT-Y-VARIABLE) AND
-               (INPUT-X-VARIABLE-N - W-X-VAR(U-COUNTER) >= 0 )
-               AND
+               WHEN TYPE-MOVE = 'DRU' AND
                (W-Y-POS(U-COUNTER) - INPUT-Y-VARIABLE = 1 )
                AND
                (INPUT-X-VARIABLE-N - W-X-VAR(U-COUNTER) = 1)
-               AND TYPE-MOVE = 'NMO'
 
-                   SET D-R-U TO TRUE
                    SET IS-VALID TO TRUE
 
-               WHEN
-               (INPUT-X-VARIABLE-N = W-X-VAR(U-COUNTER) AND
-               INPUT-Y-VARIABLE IS NOT = W-Y-POS(U-COUNTER))
-               AND TYPE-MOVE = 'NMO'
-
-                   IF INPUT-Y-VARIABLE < W-Y-POS(U-COUNTER)
-                       SET S-UP TO TRUE
-                       SET IS-VALID TO TRUE
-                   ELSE
-                       DISPLAY "INVALID MOVE"
-                       SET NOT-VALID TO TRUE
-                       PERFORM GA-ACCEPT-CORD
-
-                   END-IF
+               WHEN TYPE-MOVE = 'SUP'
+                   SET IS-VALID TO TRUE
 
                WHEN OTHER
                    DISPLAY "INVALID MOVE"
@@ -1290,7 +939,6 @@
 
            WHEN PLAYER-TURN = 'B'
                EVALUATE TRUE
-
                WHEN
                B-FIRST(U-COUNTER) = 'Y' AND
                (INPUT-Y-VARIABLE - B-Y-POS(U-COUNTER) > 2)
@@ -1309,45 +957,23 @@
                    SET NOT-VALID TO TRUE
                    PERFORM GA-ACCEPT-CORD
 
-               WHEN
-               (B-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N) =
-               (INPUT-Y-VARIABLE - B-Y-POS(U-COUNTER))
-               AND
+               WHEN TYPE-MOVE = 'DLD' AND
                (INPUT-Y-VARIABLE - B-Y-POS(U-COUNTER) = 1)
                AND
                (B-X-VAR(U-COUNTER) - INPUT-X-VARIABLE-N  = 1)
-               AND TYPE-MOVE = 'NMO'
 
-                       SET D-L-D TO TRUE
                        SET IS-VALID TO TRUE
 
-               WHEN
-               (INPUT-X-VARIABLE-N - B-X-VAR(U-COUNTER) ) =
-               (INPUT-Y-VARIABLE - B-Y-POS(U-COUNTER))
-               AND
+               WHEN TYPE-MOVE = 'DRD' AND
                (INPUT-Y-VARIABLE- B-Y-POS(U-COUNTER)  = 1 )
                AND
                (INPUT-X-VARIABLE-N - B-X-VAR(U-COUNTER) = 1)
-               AND TYPE-MOVE = 'NMO'
 
-                   SET D-R-D TO TRUE
                    SET IS-VALID TO TRUE
 
+               WHEN TYPE-MOVE = 'SDN'
 
-               WHEN
-               (INPUT-X-VARIABLE-N = B-X-VAR(U-COUNTER) AND
-               INPUT-Y-VARIABLE IS NOT = B-Y-POS(U-COUNTER))
-               AND TYPE-MOVE = 'NMO'
-
-                   IF INPUT-Y-VARIABLE > B-Y-POS(U-COUNTER)
-                       SET S-DN TO TRUE
-                       SET IS-VALID TO TRUE
-                   ELSE
-                       DISPLAY "INVALID MOVE"
-                       SET NOT-VALID TO TRUE
-                       PERFORM GA-ACCEPT-CORD
-
-                   END-IF
+                   SET IS-VALID TO TRUE
 
                WHEN OTHER
                    DISPLAY "INVALID MOVE"
@@ -1360,8 +986,8 @@
            END-EVALUATE
 
            IF VALID-MOVE = 'Y' AND TYPE-MOVE NOT = 'NMO'
-                   PERFORM IBA-CHECK-POS
-               END-IF
+               PERFORM IBA-CHECK-POS
+           END-IF
 
 
            .
