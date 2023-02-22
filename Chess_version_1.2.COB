@@ -44,6 +44,7 @@
                05 INPUT-X-VARIABLE     PIC X(1).
                05 INPUT-X-VARIABLE-N   PIC S9(1).
                05 INPUT-Y-VARIABLE     PIC S9(1).
+               05 START-INPUT          PIC X(1).
 
            01 WINNER-SWITCH        PIC X(1).
                88 W-WINNER     VALUE IS 'W'.
@@ -97,7 +98,7 @@
                SET NO-WINNER TO TRUE
                SET W-TURN TO TRUE
                SET N-MO TO TRUE
-               CALL 'CSUB001' USING COORDINATES
+
            .
 
 
@@ -107,6 +108,7 @@
       *                         B-MAIN SECTION                          *
       *******************************************************************
 
+           PERFORM BA-START-GAME
            PERFORM C-DISP-BOARD
            PERFORM D-CHECK-KING
            PERFORM GA-ACCEPT-CORD
@@ -127,6 +129,25 @@
 
            STOP RUN.
 
+           .
+
+           BA-START-GAME SECTION.
+           DISPLAY 'NEW GAME OR RESUME SAVED GAME?'
+           DISPLAY    " "
+           DISPLAY   'WRITE "N", FOR A NEW GAME OR "S" TO RESUME A GAME'
+           ACCEPT START-INPUT
+
+           MOVE FUNCTION UPPER-CASE (START-INPUT)
+               TO START-INPUT
+           EVALUATE START-INPUT
+           WHEN 'N'
+               CALL 'CSUB001' USING COORDINATES
+           WHEN 'S'
+               CALL 'CSUB002' USING COORDINATES
+           WHEN OTHER
+               DISPLAY "ENTER A VALID VALUE."
+               PERFORM BA-START-GAME
+           END-EVALUATE
            .
 
            C-DISP-BOARD SECTION.
@@ -307,22 +328,21 @@
                DISPLAY " "
            .
 
-
            GA-ACCEPT-CORD SECTION.
 
       *******************************************************************
-      *                    GA-ACCEPT-CORD SECTION                     *
+      *                      GA-ACCEPT-CORD SECTION                     *
       *******************************************************************
 
            SET NOT-VALID TO TRUE
            SET N-MO TO TRUE
-
            PERFORM FA-NEW-BOARD
            EVALUATE PLAYER-TURN
            WHEN 'W'
                PERFORM UNTIL VALID-MOVE ='Y'
                    DISPLAY " "
-                   DISPLAY 'SELECT YOUR WHITE PIECE'
+                   DISPLAY 'SELECT YOUR WHITE PIECE OR ENTER S TO SAVE'
+                   ' THE GAME'
                    ACCEPT INPUT-VARIABLE
 
                    PERFORM GAA-MOVE-INPUT
@@ -336,7 +356,8 @@
            WHEN 'B'
                PERFORM UNTIL VALID-MOVE ='Y'
                    DISPLAY " "
-                   DISPLAY 'SELECT YOUR BLACK PIECE'
+                   DISPLAY 'SELECT YOUR BLACK PIECE OR ENTER S TO SAVE'
+                   ' THE GAME'
 
                    ACCEPT INPUT-VARIABLE
 
@@ -377,6 +398,8 @@
                MOVE 7 TO INPUT-X-VARIABLE-N
            WHEN INPUT-X-VARIABLE = 'H'
                MOVE 8 TO INPUT-X-VARIABLE-N
+           WHEN INPUT-X-VARIABLE = 'S'
+               CALL 'CSUB003' USING COORDINATES
            WHEN OTHER
                DISPLAY "ENTER A VALID POSITION"
            END-EVALUATE
@@ -746,7 +769,6 @@
       *******************************************************************
 
            SET N-MO TO TRUE
-           SET NOT-VALID TO TRUE
 
            EVALUATE TRUE
 
