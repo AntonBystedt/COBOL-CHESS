@@ -15,7 +15,7 @@
 
        FILE-CONTROL.
            SELECT INFILE ASSIGN TO
-           "C:\Users\xxbystea\GitHub\COBOL-CHESS\CHESS_SAVE.txt"
+           "C:\Users\xxbystea\CHESS_SAVE.txt"
            ORGANIZATION IS LINE SEQUENTIAL
            .
       *-----------------------
@@ -48,9 +48,13 @@
 
 
        LINKAGE SECTION.
+       01 PLAYER-TURN          PIC X(1).
+               88 W-TURN       VALUE 'W'.
+               88 B-TURN       VALUE 'B'.
            COPY COORDINATES.
       *-----------------------
-       PROCEDURE DIVISION USING COORDINATES.
+       PROCEDURE DIVISION USING COORDINATES
+                                PLAYER-TURN.
       *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
        MAIN-PROCEDURE.
 
@@ -78,6 +82,8 @@
 
            MOVE 1 TO COUNTER
            OPEN I-O INFILE
+           READ INFILE INTO PLAYER-TURN
+           DISPLAY PLAYER-TURN
            READ INFILE INTO I-INPUT(COUNTER)
            PERFORM UNTIL EOF-Y OR COUNTER = 32
                ADD 1 TO COUNTER

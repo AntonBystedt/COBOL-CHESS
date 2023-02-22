@@ -96,7 +96,7 @@
 
                INITIALIZE WS-COUNTERS
                SET NO-WINNER TO TRUE
-               SET W-TURN TO TRUE
+               MOVE 'W' TO PLAYER-TURN
                SET N-MO TO TRUE
 
            .
@@ -149,6 +149,7 @@
                CALL 'CSUB001' USING COORDINATES
            WHEN 'S'
                CALL 'CSUB002' USING COORDINATES
+                                    PLAYER-TURN
            WHEN OTHER
                DISPLAY "ENTER A VALID VALUE."
                PERFORM BA-START-GAME
@@ -405,6 +406,7 @@
                MOVE 8 TO INPUT-X-VARIABLE-N
            WHEN INPUT-X-VARIABLE = 'S'
                CALL 'CSUB003' USING COORDINATES
+                                    PLAYER-TURN
            WHEN OTHER
                DISPLAY "ENTER A VALID POSITION"
            END-EVALUATE
