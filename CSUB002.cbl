@@ -57,7 +57,7 @@
            PERFORM A-INIT
            PERFORM B-MAIN
 
-           STOP RUN.
+           GOBACK.
 
            A-INIT SECTION.
            INITIALIZE I-INPUT-AREA
@@ -67,11 +67,15 @@
            .
            B-MAIN SECTION.
            PERFORM C-OPEN-FILE
-      *     PERFORM D-WRITE-FILE
-
+           PERFORM D-MOVE
            GOBACK.
 
            C-OPEN-FILE SECTION.
+
+      *******************************************************************
+      *                       C-OPEN-FILE SECTION                       *
+      *******************************************************************
+
            MOVE 1 TO COUNTER
            OPEN I-O INFILE
            READ INFILE INTO I-INPUT(COUNTER)
@@ -86,11 +90,13 @@
 
            END-PERFORM
            CLOSE INFILE
-
-           PERFORM D-MOVE
            .
 
            D-MOVE SECTION.
+
+      *******************************************************************
+      *                         D-MOVE SECTION                          *
+      *******************************************************************
            MOVE 1 TO COUNTER2
            MOVE 1 TO COUNTER
            PERFORM UNTIL COUNTER2 > 16
@@ -110,10 +116,4 @@
                ADD 1 TO COUNTER2
                         COUNTER
            END-PERFORM
-
-           .
-
-
-
-
            .

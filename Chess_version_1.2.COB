@@ -132,6 +132,11 @@
            .
 
            BA-START-GAME SECTION.
+
+      *******************************************************************
+      *                       BA-START-GAME SECTION                     *
+      *******************************************************************
+
            DISPLAY 'NEW GAME OR RESUME SAVED GAME?'
            DISPLAY    " "
            DISPLAY   'WRITE "N", FOR A NEW GAME OR "S" TO RESUME A GAME'

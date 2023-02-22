@@ -60,7 +60,12 @@
            .
 
 
-       A-WRITE-FILE SECTION.
+           A-WRITE-FILE SECTION.
+
+      *******************************************************************
+      *                        A-WRITE-FILE SECTION                     *
+      *******************************************************************
+
            OPEN OUTPUT INFILE
            MOVE 1 TO COUNTER2
            PERFORM UNTIL COUNTER2 > 16
